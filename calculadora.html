@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Calcula Fácil - Calculadora</title>
+
+
+    <!-- CSS -->
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=5"
+    >
+
+
+    <!-- ==========================================
+         AJUSTES DA LOGO
+    =========================================== -->
+
+    <style>
+
+        .calculator-header {
+            display: block;
+            text-align: center;
+        }
+
+
+        .calculator-header h1,
+        .calculator-header p {
+            display: none;
+        }
+
+
+        .calculator-icon {
+            width: 100%;
+            height: auto;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            display: block;
+        }
+
+
+        .calculator-icon img {
+            width: 100%;
+            max-width: 430px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+
+        @media (max-width: 600px) {
+
+            .calculator-icon img {
+                max-width: 330px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         CONTAINER PRINCIPAL
+    =========================================== -->
+
+    <div class="calculator-container">
+
+
+        <!-- ======================================
+             CARTÃO DA CALCULADORA
+        ======================================= -->
+
+        <div class="calculator-card">
+
+
+            <!-- ==================================
+                 LOGO
+            =================================== -->
+
+            <div class="calculator-header">
+
+                <div class="calculator-icon">
+
+                    <img
+                        src="logo_calcula_facil.png"
+                        alt="Calcula Fácil — Sua ferramenta de cálculo de preço de venda"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 USUÁRIO LOGADO
+            =================================== -->
+
+            <div class="user-bar">
+
+                <span>
+
+                    👤
+
+                    <strong id="usuarioLogado">
+                        Cliente
+                    </strong>
+
+                </span>
+
+
+                <button
+                    type="button"
+                    onclick="sair()"
+                    class="btn-small"
+                >
+
+                    Sair
+
+                </button>
+
+            </div>
+
+
+            <!-- ==================================
+                 PREÇO DE CUSTO
+            =================================== -->
+
+            <div class="campo">
+
+                <label for="pc">
+
+                    PC — Preço de Custo
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="pc"
+                    placeholder="Ex.: 10,00"
+                    step="any"
+                    min="0"
+                >
+
+
+                <div class="descricao">
+
+                    Informe o preço de custo.
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 LUCRO
+            =================================== -->
+
+            <div class="campo">
+
+                <label for="lucro">
+
+                    L — Lucro Líquido (%)
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="lucro"
+                    placeholder="Ex.: 50"
+                    step="any"
+                    min="0"
+                >
+
+
+                <div class="descricao">
+
+                    Informe o percentual de lucro.
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 TAXA FIXA
+            =================================== -->
+
+            <div class="campo">
+
+                <label for="tf">
+
+                    TF — Taxa Fixa
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="tf"
+                    placeholder="Ex.: 4,50"
+                    step="any"
+                    min="0"
+                >
+
+
+                <div class="descricao">
+
+                    Informe a taxa fixa.
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 DESCONTO
+            =================================== -->
+
+            <div class="campo">
+
+                <label for="pd">
+
+                    PD — Desconto (%)
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="pd"
+                    placeholder="Ex.: 20"
+                    step="any"
+                    min="0"
+                    max="99.99"
+                >
+
+
+                <div class="descricao">
+
+                    Informe o percentual de desconto.
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 IMPOSTO
+            =================================== -->
+
+            <div class="campo">
+
+                <label for="imposto">
+
+                    I — Imposto (%)
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="imposto"
+                    placeholder="Ex.: 4"
+                    step="any"
+                    min="0"
+                    max="99.99"
+                >
+
+
+                <div class="descricao">
+
+                    Informe o percentual de imposto.
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 RESULTADO
+            =================================== -->
+
+            <div class="resultado-box">
+
+
+                <!-- TÍTULO -->
+
+                <div class="resultado-label">
+
+                    PREÇO CALCULADO
+
+                </div>
+
+
+                <!-- VALOR -->
+
+                <div
+                    class="resultado"
+                    id="resultado"
+                >
+
+                    R$ 0,00
+
+                </div>
+
+
+                <!-- LINHA SEPARADORA -->
+
+                <div
+                    style="
+                        height: 1px;
+                        background: rgba(0,0,0,0.06);
+                        margin: 12px 0;
+                    "
+                ></div>
+
+
+                <!-- ==================================
+                     DETALHES
+                =================================== -->
+
+                <div
+                    class="detalhes"
+                    id="detalhes"
+                >
+
+                    Preencha os cinco campos para realizar o cálculo.
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         LOGIN / SESSÃO
+    =========================================== -->
+
+    <script
+        src="login.js?v=3"
+        defer
+    ></script>
+
+
+    <!-- ==========================================
+         CALCULADORA
+         
+         v=5 PARA FORÇAR NOVA VERSÃO
+    =========================================== -->
+
+    <script
+        src="calculadora.js?v=5"
+        defer
+    ></script>
+
+
+</body>
+
+</html>

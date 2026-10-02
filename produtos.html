@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Calcula Fácil - Meus Produtos</title>
+
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=5"
+    >
+
+
+    <style>
+
+        /* ==========================================
+           MEUS PRODUTOS
+        ========================================== */
+
+        .produtos-container {
+
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 25px 15px 40px;
+
+        }
+
+
+        .produtos-card {
+
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.10);
+
+        }
+
+
+        /* ==========================================
+           CABEÇALHO
+        ========================================== */
+
+        .produtos-header {
+
+            text-align: center;
+            margin-bottom: 20px;
+
+        }
+
+
+        .produtos-header img {
+
+            width: 100%;
+            max-width: 330px;
+            height: auto;
+            display: block;
+            margin: 0 auto 15px;
+
+        }
+
+
+        .produtos-header h1 {
+
+            margin: 0;
+            color: #123b87;
+            font-size: 26px;
+
+        }
+
+
+        .produtos-header p {
+
+            margin: 6px 0 0;
+            color: #777;
+            font-size: 14px;
+
+        }
+
+
+        /* ==========================================
+           BARRA SUPERIOR
+        ========================================== */
+
+        .produtos-topo {
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f5f7fb;
+            border-radius: 12px;
+            flex-wrap: wrap;
+
+        }
+
+
+        .usuario-produtos {
+
+            font-size: 14px;
+            color: #444;
+
+        }
+
+
+        .acoes-topo {
+
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+
+        }
+
+
+        .btn-produto {
+
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+
+        }
+
+
+        .btn-voltar {
+
+            background: #e9edf5;
+            color: #234;
+
+        }
+
+
+        .btn-sair {
+
+            background: #eeeeee;
+            color: #333;
+
+        }
+
+
+        .btn-novo {
+
+            background: #125bea;
+            color: white;
+
+        }
+
+
+        /* ==========================================
+           FORMULÁRIO
+        ========================================== */
+
+        .form-produto {
+
+            display: none;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f7f9fd;
+            border: 1px solid #e3e8f2;
+            border-radius: 14px;
+
+        }
+
+
+        .form-produto.ativo {
+
+            display: block;
+
+        }
+
+
+        .form-titulo {
+
+            margin: 0 0 18px;
+            color: #123b87;
+            font-size: 20px;
+
+        }
+
+
+        .form-grid {
+
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+
+        }
+
+
+        .campo-produto {
+
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+
+        }
+
+
+        .campo-produto label {
+
+            font-size: 13px;
+            font-weight: 700;
+            color: #334;
+
+        }
+
+
+        .campo-produto input {
+
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #ccd5e4;
+            border-radius: 8px;
+            background: #ffffff;
+            font-size: 16px;
+            outline: none;
+
+        }
+
+
+        .campo-produto input:focus {
+
+            border-color: #125bea;
+            box-shadow: 0 0 0 3px rgba(18,91,234,0.10);
+
+        }
+
+
+        .form-acoes {
+
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+
+        }
+
+
+        .btn-salvar {
+
+            background: #168544;
+            color: white;
+
+        }
+
+
+        .btn-cancelar {
+
+            background: #e8e8e8;
+            color: #333;
+
+        }
+
+
+        /* ==========================================
+           MENSAGEM
+        ========================================== */
+
+        .produto-mensagem {
+
+            min-height: 20px;
+            margin: 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+
+        }
+
+
+        .produto-mensagem.sucesso {
+
+            color: #168544;
+
+        }
+
+
+        .produto-mensagem.erro {
+
+            color: #c62828;
+
+        }
+
+
+        /* ==========================================
+           LISTA
+        ========================================== */
+
+        .lista-titulo {
+
+            margin: 20px 0 12px;
+            color: #123b87;
+            font-size: 20px;
+
+        }
+
+
+        .lista-produtos {
+
+            display: grid;
+            gap: 12px;
+
+        }
+
+
+        .produto-item {
+
+            border: 1px solid #e0e5ee;
+            border-radius: 12px;
+            padding: 16px;
+            background: #ffffff;
+
+        }
+
+
+        .produto-item-topo {
+
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+
+        }
+
+
+        .produto-nome {
+
+            font-size: 18px;
+            font-weight: 700;
+            color: #123b87;
+
+        }
+
+
+        .produto-sku {
+
+            font-size: 12px;
+            color: #888;
+            margin-top: 3px;
+
+        }
+
+
+        .produto-valores {
+
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+
+        }
+
+
+        .produto-valor {
+
+            background: #f7f9fd;
+            border-radius: 8px;
+            padding: 10px;
+
+        }
+
+
+        .produto-valor span {
+
+            display: block;
+            font-size: 11px;
+            color: #777;
+            margin-bottom: 4px;
+
+        }
+
+
+        .produto-valor strong {
+
+            display: block;
+            color: #222;
+            font-size: 15px;
+
+        }
+
+
+        .produto-lucro strong {
+
+            color: #168544;
+
+        }
+
+
+        .produto-acoes {
+
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+
+        }
+
+
+        .btn-editar {
+
+            background: #eaf2ff;
+            color: #125bea;
+
+        }
+
+
+        .btn-recalcular {
+
+            background: #fff5df;
+            color: #a86600;
+
+        }
+
+
+        .btn-excluir {
+
+            background: #ffeaea;
+            color: #c62828;
+
+        }
+
+
+        /* ==========================================
+           VAZIO / CARREGANDO
+        ========================================== */
+
+        .lista-vazia {
+
+            text-align: center;
+            padding: 35px 15px;
+            color: #777;
+            background: #f8f9fb;
+            border-radius: 12px;
+
+        }
+
+
+        /* ==========================================
+           RESPONSIVO
+        ========================================== */
+
+        @media (max-width: 700px) {
+
+            .produtos-card {
+
+                padding: 18px;
+
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .produto-valores {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .produtos-topo {
+
+                align-items: stretch;
+
+            }
+
+
+            .acoes-topo {
+
+                width: 100%;
+
+            }
+
+
+            .acoes-topo button {
+
+                flex: 1;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="produtos-container">
+
+
+        <div class="produtos-card">
+
+
+            <!-- ======================================
+                 CABEÇALHO
+            ======================================= -->
+
+            <div class="produtos-header">
+
+                <img
+                    src="logo_calcula_facil.png"
+                    alt="Calcula Fácil"
+                >
+
+                <h1>
+                    📦 Meus Produtos
+                </h1>
+
+                <p>
+                    Cadastre e gerencie seus produtos.
+                </p>
+
+            </div>
+
+
+            <!-- ======================================
+                 TOPO
+            ======================================= -->
+
+            <div class="produtos-topo">
+
+                <div class="usuario-produtos">
+
+                    👤
+
+                    <strong id="usuarioLogado">
+                        Cliente
+                    </strong>
+
+                </div>
+
+
+                <div class="acoes-topo">
+
+                    <button
+                        type="button"
+                        class="btn-produto btn-voltar"
+                        onclick="voltarCalculadora()"
+                    >
+                        ← Calculadora
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-produto btn-novo"
+                        onclick="novoProduto()"
+                    >
+                        + Cadastrar Produto
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-produto btn-sair"
+                        onclick="sair()"
+                    >
+                        Sair
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ======================================
+                 FORMULÁRIO
+            ======================================= -->
+
+            <div
+                id="formProduto"
+                class="form-produto"
+            >
+
+                <h2
+                    id="formTitulo"
+                    class="form-titulo"
+                >
+                    Cadastrar Produto
+                </h2>
+
+
+                <div class="form-grid">
+
+
+                    <div class="campo-produto">
+
+                        <label for="produtoNome">
+                            Nome do Produto
+                        </label>
+
+                        <input
+                            type="text"
+                            id="produtoNome"
+                            placeholder="Ex.: Passadeira 1,50m"
+                        >
+
+                    </div>
+
+
+                    <div class="campo-produto">
+
+                        <label for="produtoSku">
+                            Código / SKU
+                        </label>
+
+                        <input
+                            type="text"
+                            id="produtoSku"
+                            placeholder="Ex.: PASS-150"
+                        >
+
+                    </div>
+
+
+                    <div class="campo-produto">
+
+                        <label for="produtoCusto">
+                            PC — Preço de Custo
+                        </label>
+
+                        <input
+                            type="number"
+                            id="produtoCusto"
+                            placeholder="Ex.: 20"
+                            step="any"
+                            min="0"
+                        >
+
+                    </div>
+
+
+                    <div class="campo-produto">
+
+                        <label for="produtoLucro">
+                            L — Lucro Desejado (%)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="produtoLucro"
+                            placeholder="Ex.: 50"
+                            step="any"
+                            min="0"
+                        >
+
+                    </div>
+
+
+                    <div class="campo-produto">
+
+                        <label for="produtoTaxa">
+                            TF — Taxa Fixa
+                        </label>
+
+                        <input
+                            type="number"
+                            id="produtoTaxa"
+                            placeholder="Ex.: 4,50"
+                            step="any"
+                            min="0"
+                        >
+
+                    </div>
+
+
+                    <div class="campo-produto">
+
+                        <label for="produtoDesconto">
+                            PD — Desconto (%)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="produtoDesconto"
+                            placeholder="Ex.: 20"
+                            step="any"
+                            min="0"
+                            max="99.99"
+                        >
+
+                    </div>
+
+
+                    <div class="campo-produto">
+
+                        <label for="produtoImposto">
+                            I — Imposto (%)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="produtoImposto"
+                            placeholder="Ex.: 4"
+                            step="any"
+                            min="0"
+                            max="99.99"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <div
+                    id="produtoMensagem"
+                    class="produto-mensagem"
+                ></div>
+
+
+                <div class="form-acoes">
+
+                    <button
+                        type="button"
+                        class="btn-produto btn-salvar"
+                        onclick="salvarProduto()"
+                    >
+                        💾 Salvar Produto
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-produto btn-cancelar"
+                        onclick="cancelarProduto()"
+                    >
+                        Cancelar
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ======================================
+                 LISTA
+            ======================================= -->
+
+            <h2 class="lista-titulo">
+                Produtos cadastrados
+            </h2>
+
+
+            <div
+                id="listaProdutos"
+                class="lista-produtos"
+            >
+
+                <div class="lista-vazia">
+                    Carregando produtos...
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         SUPABASE
+    =========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- LOGIN / SESSÃO -->
+
+    <script
+        src="login.js?v=3"
+    ></script>
+
+
+    <!-- PRODUTOS -->
+
+    <script
+        src="produtos.js?v=1"
+    ></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Calcula Fácil - Administração</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="admin-container">
+
+
+    <header class="admin-header">
+
+        <div>
+
+            <div class="admin-logo">
+                🧮 Calcula Fácil
+            </div>
+
+            <h1>
+                Painel Administrativo
+            </h1>
+
+            <p>
+                Gerenciamento de usuários
+            </p>
+
+        </div>
+
+
+        <button
+            class="btn-danger"
+            onclick="sair()"
+        >
+            Sair
+        </button>
+
+    </header>
+
+
+    <!-- ======================================
+         CRIAR USUÁRIO
+    ======================================= -->
+
+    <section class="admin-card">
+
+        <h2>
+            ➕ Criar novo usuário
+        </h2>
+
+        <p class="section-description">
+            Crie um acesso para seu cliente.
+        </p>
+
+
+        <form id="usuarioForm">
+
+            <div class="grid-form">
+
+
+                <div class="form-group">
+
+                    <label for="nome">
+                        Nome do cliente
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nome"
+                        placeholder="Ex.: João da Silva"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="novoUsuario">
+                        Usuário
+                    </label>
+
+                    <input
+                        type="text"
+                        id="novoUsuario"
+                        placeholder="Ex.: cliente001"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="novaSenha">
+                        Senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="novaSenha"
+                        placeholder="Crie uma senha"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="validade">
+                        Data de validade
+                    </label>
+
+                    <input
+                        type="date"
+                        id="validade"
+                        required
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-primary"
+            >
+                CRIAR USUÁRIO
+            </button>
+
+
+            <div
+                id="adminMensagem"
+                class="mensagem"
+            ></div>
+
+        </form>
+
+    </section>
+
+
+    <!-- ======================================
+         LISTA DE USUÁRIOS
+    ======================================= -->
+
+    <section class="admin-card">
+
+        <div class="section-title-row">
+
+            <div>
+
+                <h2>
+                    👥 Usuários cadastrados
+                </h2>
+
+                <p class="section-description">
+                    Gerencie os acessos dos seus clientes.
+                </p>
+
+            </div>
+
+
+            <div
+                id="contadorUsuarios"
+                class="contador"
+            >
+                0 usuários
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Nome
+                        </th>
+
+                        <th>
+                            Usuário
+                        </th>
+
+                        <th>
+                            Validade
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Ações
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="listaUsuarios">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================
+         INFORMAÇÃO
+    ======================================= -->
+
+    <section class="info-box">
+
+        <strong>
+            🔐 Sistema conectado ao Supabase
+        </strong>
+
+        <p>
+            Os usuários cadastrados são armazenados
+            no banco de dados online e podem ser
+            administrados pelo painel.
+        </p>
+
+    </section>
+
+
+</div>
+
+
+<!-- ==========================================
+     SUPABASE
+     
+     IMPORTANTE:
+     A biblioteca precisa carregar ANTES
+     do login.js.
+=========================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- ==========================================
+     LOGIN / SESSÃO
+=========================================== -->
+
+<script src="login.js"></script>
+
+
+<!-- ==========================================
+     PAINEL ADMINISTRATIVO
+=========================================== -->
+
+<script src="admin.js"></script>
+
+
+</body>
+
+</html>
