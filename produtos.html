@@ -3,500 +3,478 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Calcula Fácil - Meus Produtos</title>
+<title>Calcula Fácil - Meus Produtos</title>
 
 
-    <link
-        rel="stylesheet"
-        href="style.css?v=5"
-    >
+<link rel="stylesheet" href="style.css?v=5">
 
 
-    <style>
+<style>
 
-        /* ==========================================
-           MEUS PRODUTOS
-        ========================================== */
+/* ==========================================
+   MEUS PRODUTOS
+========================================== */
 
-        .produtos-container {
 
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 25px 15px 40px;
+.produtos-container {
 
-        }
+    width:100%;
+    max-width:1000px;
+    margin:0 auto;
+    padding:25px 15px 40px;
 
+}
 
-        .produtos-card {
 
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 25px;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.10);
+.produtos-card {
 
-        }
+    background:#fff;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 10px 35px rgba(0,0,0,.10);
 
+}
 
-        /* ==========================================
-           CABEÇALHO
-        ========================================== */
 
-        .produtos-header {
 
-            text-align: center;
-            margin-bottom: 20px;
+/* CABEÇALHO */
 
-        }
 
+.produtos-header {
 
-        .produtos-header img {
+    text-align:center;
+    margin-bottom:20px;
 
-            width: 100%;
-            max-width: 330px;
-            height: auto;
-            display: block;
-            margin: 0 auto 15px;
+}
 
-        }
 
+.produtos-header img {
 
-        .produtos-header h1 {
+    width:100%;
+    max-width:330px;
+    display:block;
+    margin:auto;
 
-            margin: 0;
-            color: #123b87;
-            font-size: 26px;
+}
 
-        }
 
+.produtos-header h1 {
 
-        .produtos-header p {
+    color:#123b87;
+    font-size:26px;
 
-            margin: 6px 0 0;
-            color: #777;
-            font-size: 14px;
+}
 
-        }
 
+.produtos-header p {
 
-        /* ==========================================
-           BARRA SUPERIOR
-        ========================================== */
+    color:#777;
 
-        .produtos-topo {
+}
 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding: 12px;
-            background: #f5f7fb;
-            border-radius: 12px;
-            flex-wrap: wrap;
 
-        }
 
+/* TOPO */
 
-        .usuario-produtos {
 
-            font-size: 14px;
-            color: #444;
+.produtos-topo {
 
-        }
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
 
+    background:#f5f7fb;
+    padding:12px;
+    border-radius:12px;
 
-        .acoes-topo {
+}
 
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
 
-        }
 
+.usuario-produtos {
 
-        .btn-produto {
+    color:#444;
+    font-size:14px;
 
-            border: none;
-            border-radius: 8px;
-            padding: 10px 14px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
+}
 
-        }
 
 
-        .btn-voltar {
+.acoes-topo {
 
-            background: #e9edf5;
-            color: #234;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
 
-        }
+}
 
 
-        .btn-sair {
 
-            background: #eeeeee;
-            color: #333;
+.btn-produto {
 
-        }
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-weight:600;
 
+}
 
-        .btn-novo {
 
-            background: #125bea;
-            color: white;
+.btn-voltar {
 
-        }
+    background:#e9edf5;
 
+}
 
-        /* ==========================================
-           FORMULÁRIO
-        ========================================== */
 
-        .form-produto {
+.btn-novo {
 
-            display: none;
-            margin-bottom: 25px;
-            padding: 20px;
-            background: #f7f9fd;
-            border: 1px solid #e3e8f2;
-            border-radius: 14px;
+    background:#125bea;
+    color:white;
 
-        }
+}
 
 
-        .form-produto.ativo {
+.btn-sair {
 
-            display: block;
+    background:#eee;
 
-        }
+}
 
 
-        .form-titulo {
 
-            margin: 0 0 18px;
-            color: #123b87;
-            font-size: 20px;
+/* ==========================================
+   BUSCA
+========================================== */
 
-        }
 
+.busca-produtos {
 
-        .form-grid {
+    margin:20px 0;
+    padding:15px;
+    background:#f7f9fd;
+    border-radius:12px;
+    border:1px solid #e3e8f2;
 
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
+}
 
-        }
 
 
-        .campo-produto {
+.busca-produtos label {
 
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+    display:block;
+    font-weight:700;
+    color:#334;
+    margin-bottom:8px;
 
-        }
+}
 
 
-        .campo-produto label {
 
-            font-size: 13px;
-            font-weight: 700;
-            color: #334;
+.busca-produtos input {
 
-        }
+    width:100%;
+    box-sizing:border-box;
 
+    padding:13px;
 
-        .campo-produto input {
+    border:1px solid #ccd5e4;
+    border-radius:8px;
 
-            width: 100%;
-            box-sizing: border-box;
-            padding: 12px;
-            border: 1px solid #ccd5e4;
-            border-radius: 8px;
-            background: #ffffff;
-            font-size: 16px;
-            outline: none;
+    font-size:16px;
 
-        }
+}
 
 
-        .campo-produto input:focus {
 
-            border-color: #125bea;
-            box-shadow: 0 0 0 3px rgba(18,91,234,0.10);
+.busca-produtos input:focus {
 
-        }
+    outline:none;
+    border-color:#125bea;
 
+}
 
-        .form-acoes {
 
-            display: flex;
-            gap: 10px;
-            margin-top: 18px;
-            flex-wrap: wrap;
 
-        }
+/* FORMULÁRIO */
 
 
-        .btn-salvar {
+.form-produto {
 
-            background: #168544;
-            color: white;
+    display:none;
 
-        }
+    padding:20px;
 
+    background:#f7f9fd;
 
-        .btn-cancelar {
+    border-radius:14px;
 
-            background: #e8e8e8;
-            color: #333;
+    margin-bottom:25px;
 
-        }
+}
 
 
-        /* ==========================================
-           MENSAGEM
-        ========================================== */
 
-        .produto-mensagem {
+.form-produto.ativo {
 
-            min-height: 20px;
-            margin: 10px 0;
-            font-size: 14px;
-            font-weight: 600;
+    display:block;
 
-        }
+}
 
 
-        .produto-mensagem.sucesso {
 
-            color: #168544;
+.form-grid {
 
-        }
+    display:grid;
 
+    grid-template-columns:repeat(2,1fr);
 
-        .produto-mensagem.erro {
+    gap:14px;
 
-            color: #c62828;
+}
 
-        }
 
 
-        /* ==========================================
-           LISTA
-        ========================================== */
+.campo-produto {
 
-        .lista-titulo {
+    display:flex;
 
-            margin: 20px 0 12px;
-            color: #123b87;
-            font-size: 20px;
+    flex-direction:column;
 
-        }
+    gap:6px;
 
+}
 
-        .lista-produtos {
 
-            display: grid;
-            gap: 12px;
 
-        }
+.campo-produto label {
 
+    font-size:13px;
 
-        .produto-item {
+    font-weight:bold;
 
-            border: 1px solid #e0e5ee;
-            border-radius: 12px;
-            padding: 16px;
-            background: #ffffff;
+}
 
-        }
 
 
-        .produto-item-topo {
+.campo-produto input {
 
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            flex-wrap: wrap;
+    padding:12px;
 
-        }
+    border-radius:8px;
 
+    border:1px solid #ccd5e4;
 
-        .produto-nome {
+    font-size:16px;
 
-            font-size: 18px;
-            font-weight: 700;
-            color: #123b87;
+}
 
-        }
 
 
-        .produto-sku {
+.form-acoes {
 
-            font-size: 12px;
-            color: #888;
-            margin-top: 3px;
+    margin-top:18px;
 
-        }
+    display:flex;
 
+    gap:10px;
 
-        .produto-valores {
+}
 
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 15px;
 
-        }
 
+.btn-salvar {
 
-        .produto-valor {
+    background:#168544;
 
-            background: #f7f9fd;
-            border-radius: 8px;
-            padding: 10px;
+    color:white;
 
-        }
+}
 
 
-        .produto-valor span {
 
-            display: block;
-            font-size: 11px;
-            color: #777;
-            margin-bottom: 4px;
+.btn-cancelar {
 
-        }
+    background:#ddd;
 
+}
 
-        .produto-valor strong {
 
-            display: block;
-            color: #222;
-            font-size: 15px;
 
-        }
+/* LISTA */
 
 
-        .produto-lucro strong {
+.lista-titulo {
 
-            color: #168544;
+    color:#123b87;
 
-        }
+}
 
 
-        .produto-acoes {
+.lista-produtos {
 
-            display: flex;
-            gap: 8px;
-            margin-top: 14px;
-            flex-wrap: wrap;
+    display:grid;
 
-        }
+    gap:12px;
 
+}
 
-        .btn-editar {
 
-            background: #eaf2ff;
-            color: #125bea;
+.produto-item {
 
-        }
+    border:1px solid #e0e5ee;
 
+    border-radius:12px;
 
-        .btn-recalcular {
+    padding:16px;
 
-            background: #fff5df;
-            color: #a86600;
+}
 
-        }
 
 
-        .btn-excluir {
+.produto-nome {
 
-            background: #ffeaea;
-            color: #c62828;
+    color:#123b87;
 
-        }
+    font-size:18px;
 
+    font-weight:bold;
 
-        /* ==========================================
-           VAZIO / CARREGANDO
-        ========================================== */
+}
 
-        .lista-vazia {
 
-            text-align: center;
-            padding: 35px 15px;
-            color: #777;
-            background: #f8f9fb;
-            border-radius: 12px;
 
-        }
+.produto-sku {
 
+    color:#888;
 
-        /* ==========================================
-           RESPONSIVO
-        ========================================== */
+    font-size:12px;
 
-        @media (max-width: 700px) {
+}
 
-            .produtos-card {
 
-                padding: 18px;
+.produto-valores {
 
-            }
+    display:grid;
 
+    grid-template-columns:repeat(3,1fr);
 
-            .form-grid {
+    gap:10px;
 
-                grid-template-columns: 1fr;
+    margin-top:15px;
 
-            }
+}
 
 
-            .produto-valores {
+.produto-valor {
 
-                grid-template-columns: 1fr;
+    background:#f7f9fd;
 
-            }
+    padding:10px;
 
+    border-radius:8px;
 
-            .produtos-topo {
+}
 
-                align-items: stretch;
 
-            }
+.produto-valor span {
 
+    font-size:11px;
 
-            .acoes-topo {
+    color:#777;
 
-                width: 100%;
+}
 
-            }
 
 
-            .acoes-topo button {
+.produto-lucro strong {
 
-                flex: 1;
+    color:#168544;
 
-            }
+}
 
-        }
 
-    </style>
+.produto-acoes {
+
+    display:flex;
+
+    gap:8px;
+
+    margin-top:14px;
+
+}
+
+
+.btn-editar {
+
+    background:#eaf2ff;
+    color:#125bea;
+
+}
+
+
+.btn-recalcular {
+
+    background:#fff5df;
+
+}
+
+
+.btn-excluir {
+
+    background:#ffeaea;
+    color:#c62828;
+
+}
+
+
+.lista-vazia {
+
+    text-align:center;
+
+    padding:35px;
+
+    background:#f8f9fb;
+
+    border-radius:12px;
+
+}
+
+
+
+@media(max-width:700px){
+
+.form-grid{
+
+grid-template-columns:1fr;
+
+}
+
+
+.produto-valores{
+
+grid-template-columns:1fr;
+
+}
+
+
+.produtos-card{
+
+padding:18px;
+
+}
+
+}
+
+
+</style>
 
 </head>
 
@@ -504,316 +482,390 @@
 <body>
 
 
-    <div class="produtos-container">
+<div class="produtos-container">
 
 
-        <div class="produtos-card">
+<div class="produtos-card">
 
 
-            <!-- ======================================
-                 CABEÇALHO
-            ======================================= -->
+<div class="produtos-header">
 
-            <div class="produtos-header">
+<img src="logo_calcula_facil.png" alt="Calcula Fácil">
 
-                <img
-                    src="logo_calcula_facil.png"
-                    alt="Calcula Fácil"
-                >
 
-                <h1>
-                    📦 Meus Produtos
-                </h1>
+<h1>
+📦 Meus Produtos
+</h1>
 
-                <p>
-                    Cadastre e gerencie seus produtos.
-                </p>
 
-            </div>
+<p>
+Cadastre e gerencie seus produtos.
+</p>
 
 
-            <!-- ======================================
-                 TOPO
-            ======================================= -->
+</div>
+<!-- ======================================
+     TOPO
+======================================= -->
 
-            <div class="produtos-topo">
 
-                <div class="usuario-produtos">
+<div class="produtos-topo">
 
-                    👤
 
-                    <strong id="usuarioLogado">
-                        Cliente
-                    </strong>
+<div class="usuario-produtos">
 
-                </div>
+👤
 
+<strong id="usuarioLogado">
+Cliente
+</strong>
 
-                <div class="acoes-topo">
 
-                    <button
-                        type="button"
-                        class="btn-produto btn-voltar"
-                        onclick="voltarCalculadora()"
-                    >
-                        ← Calculadora
-                    </button>
+</div>
 
 
-                    <button
-                        type="button"
-                        class="btn-produto btn-novo"
-                        onclick="novoProduto()"
-                    >
-                        + Cadastrar Produto
-                    </button>
 
+<div class="acoes-topo">
 
-                    <button
-                        type="button"
-                        class="btn-produto btn-sair"
-                        onclick="sair()"
-                    >
-                        Sair
-                    </button>
 
-                </div>
+<button
+type="button"
+class="btn-produto btn-voltar"
+onclick="voltarCalculadora()"
+>
 
-            </div>
+← Calculadora
 
+</button>
 
-            <!-- ======================================
-                 FORMULÁRIO
-            ======================================= -->
 
-            <div
-                id="formProduto"
-                class="form-produto"
-            >
 
-                <h2
-                    id="formTitulo"
-                    class="form-titulo"
-                >
-                    Cadastrar Produto
-                </h2>
+<button
+type="button"
+class="btn-produto btn-novo"
+onclick="novoProduto()"
+>
 
++ Cadastrar Produto
 
-                <div class="form-grid">
+</button>
 
 
-                    <div class="campo-produto">
 
-                        <label for="produtoNome">
-                            Nome do Produto
-                        </label>
+<button
+type="button"
+class="btn-produto btn-sair"
+onclick="sair()"
+>
 
-                        <input
-                            type="text"
-                            id="produtoNome"
-                            placeholder="Ex.: Passadeira 1,50m"
-                        >
+Sair
 
-                    </div>
+</button>
 
 
-                    <div class="campo-produto">
+</div>
 
-                        <label for="produtoSku">
-                            Código / SKU
-                        </label>
 
-                        <input
-                            type="text"
-                            id="produtoSku"
-                            placeholder="Ex.: PASS-150"
-                        >
+</div>
 
-                    </div>
 
 
-                    <div class="campo-produto">
+<!-- ======================================
+     BARRA DE BUSCA
+======================================= -->
 
-                        <label for="produtoCategoria">
-                            Categoria
-                        </label>
 
-                        <input
-                            type="text"
-                            id="produtoCategoria"
-                            placeholder="Ex.: Passadeiras"
-                        >
+<div class="busca-produtos">
 
-                    </div>
 
+<label for="buscarProduto">
 
-                    <div class="campo-produto">
+🔎 Buscar produto
 
-                        <label for="produtoCusto">
-                            PC — Preço de Custo
-                        </label>
+</label>
 
-                        <input
-                            type="number"
-                            id="produtoCusto"
-                            placeholder="Ex.: 20"
-                            step="any"
-                            min="0"
-                        >
 
-                    </div>
+<input
+type="text"
+id="buscarProduto"
+placeholder="Digite nome, SKU ou categoria..."
+>
 
 
-                    <div class="campo-produto">
+</div>
 
-                        <label for="produtoLucro">
-                            L — Lucro Desejado (%)
-                        </label>
 
-                        <input
-                            type="number"
-                            id="produtoLucro"
-                            placeholder="Ex.: 50"
-                            step="any"
-                            min="0"
-                        >
 
-                    </div>
 
 
-                    <div class="campo-produto">
+<!-- ======================================
+     FORMULÁRIO
+======================================= -->
 
-                        <label for="produtoTaxa">
-                            TF — Taxa Fixa
-                        </label>
 
-                        <input
-                            type="number"
-                            id="produtoTaxa"
-                            placeholder="Ex.: 4,50"
-                            step="any"
-                            min="0"
-                        >
+<div
+id="formProduto"
+class="form-produto"
+>
 
-                    </div>
 
+<h2
+id="formTitulo"
+>
 
-                    <div class="campo-produto">
+Cadastrar Produto
 
-                        <label for="produtoDesconto">
-                            PD — Desconto (%)
-                        </label>
+</h2>
 
-                        <input
-                            type="number"
-                            id="produtoDesconto"
-                            placeholder="Ex.: 20"
-                            step="any"
-                            min="0"
-                            max="99.99"
-                        >
 
-                    </div>
 
+<div class="form-grid">
 
-                    <div class="campo-produto">
 
-                        <label for="produtoImposto">
-                            I — Imposto (%)
-                        </label>
 
-                        <input
-                            type="number"
-                            id="produtoImposto"
-                            placeholder="Ex.: 4"
-                            step="any"
-                            min="0"
-                            max="99.99"
-                        >
+<div class="campo-produto">
 
-                    </div>
+<label>
+Nome do Produto
+</label>
 
+<input
+type="text"
+id="produtoNome"
+placeholder="Ex.: Passadeira 1,50m"
+>
 
-                </div>
+</div>
 
 
-                <div
-                    id="produtoMensagem"
-                    class="produto-mensagem"
-                ></div>
 
 
-                <div class="form-acoes">
+<div class="campo-produto">
 
-                    <button
-                        type="button"
-                        class="btn-produto btn-salvar"
-                        onclick="salvarProduto()"
-                    >
-                        💾 Salvar Produto
-                    </button>
+<label>
+Código / SKU
+</label>
 
+<input
+type="text"
+id="produtoSku"
+placeholder="Ex.: PASS-150"
+>
 
-                    <button
-                        type="button"
-                        class="btn-produto btn-cancelar"
-                        onclick="cancelarProduto()"
-                    >
-                        Cancelar
-                    </button>
+</div>
 
-                </div>
 
-            </div>
 
 
-            <!-- ======================================
-                 LISTA
-            ======================================= -->
+<div class="campo-produto">
 
-            <h2 class="lista-titulo">
-                Produtos cadastrados
-            </h2>
+<label>
+Categoria
+</label>
 
+<input
+type="text"
+id="produtoCategoria"
+placeholder="Ex.: Passadeiras"
+>
 
-            <div
-                id="listaProdutos"
-                class="lista-produtos"
-            >
+</div>
 
-                <div class="lista-vazia">
-                    Carregando produtos...
-                </div>
 
-            </div>
 
 
-        </div>
+<div class="campo-produto">
 
-    </div>
+<label>
+PC — Preço de Custo
+</label>
 
+<input
+type="number"
+id="produtoCusto"
+step="any"
+min="0"
+>
 
-    <!-- ==========================================
-         SUPABASE
-    =========================================== -->
+</div>
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
 
 
-    <!-- LOGIN / SESSÃO -->
 
-    <script
-        src="login.js?v=3"
-    ></script>
+<div class="campo-produto">
 
+<label>
+L — Lucro Desejado (%)
+</label>
 
-    <!-- PRODUTOS -->
+<input
+type="number"
+id="produtoLucro"
+step="any"
+min="0"
+>
 
-    <script
-        src="produtos.js?v=1"
-    ></script>
+</div>
+
+
+
+
+<div class="campo-produto">
+
+<label>
+TF — Taxa Fixa
+</label>
+
+<input
+type="number"
+id="produtoTaxa"
+step="any"
+min="0"
+>
+
+</div>
+
+
+
+
+<div class="campo-produto">
+
+<label>
+PD — Desconto (%)
+</label>
+
+<input
+type="number"
+id="produtoDesconto"
+step="any"
+min="0"
+>
+
+</div>
+
+
+
+
+<div class="campo-produto">
+
+<label>
+I — Imposto (%)
+</label>
+
+<input
+type="number"
+id="produtoImposto"
+step="any"
+min="0"
+>
+
+</div>
+
+
+
+</div>
+
+
+
+<div
+id="produtoMensagem"
+class="produto-mensagem"
+></div>
+
+
+
+
+<div class="form-acoes">
+
+
+<button
+type="button"
+class="btn-produto btn-salvar"
+onclick="salvarProduto()"
+>
+
+💾 Salvar Produto
+
+</button>
+
+
+
+<button
+type="button"
+class="btn-produto btn-cancelar"
+onclick="cancelarProduto()"
+>
+
+Cancelar
+
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<h2 class="lista-titulo">
+
+Produtos cadastrados
+
+</h2>
+
+
+
+<div
+id="listaProdutos"
+class="lista-produtos"
+>
+
+
+<div class="lista-vazia">
+
+Carregando produtos...
+
+</div>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- SUPABASE -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+
+<!-- LOGIN -->
+
+
+<script src="login.js?v=3"></script>
+
+
+
+<!-- PRODUTOS -->
+
+
+<script src="produtos.js?v=2"></script>
+
 
 
 </body>
