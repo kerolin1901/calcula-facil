@@ -16,7 +16,8 @@ protegerAdmin();
    CONFIGURAÇÃO
 ========================================== */
 
-const adminSupabase = supabaseClient;
+const adminSupabase = supabaseClient =
+"sb_publishable_rXqWNIrp8Tx9qPBhveoEGA_WPD6pGxi";
 
 
 /* ==========================================
