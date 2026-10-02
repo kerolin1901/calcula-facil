@@ -448,8 +448,18 @@ async function alternarUsuario(id){
 
 
 
-    const novoStatus =
-        !usuario.ativo;
+    const {error:updateError} =
+await adminSupabase
+.from("usuarios")
+.update({
+
+    ativo: novoStatus
+
+})
+.eq(
+    "id",
+    id
+);
 
 
 
