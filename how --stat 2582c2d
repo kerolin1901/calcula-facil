@@ -1,0 +1,20 @@
+[33m2582c2d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m restaura backup funcionando
+[33mf5eaad1[m corrige login por usuario ou email
+[33mb5b607d[m corrige recuperacao de senha
+[33m7db78ff[m corrige redefinicao de senha
+[33me7cf614[m corrige recuperação senha
+[33m4f43646[m corrige recuperação senha
+[33ma1ea41f[m correção login
+[33m85575f0[m Corrige login de clientes por usuario e senha
+[33m1f12f5c[m corrige painel admin usuarios
+[33mf049928[m corrige ativacao de usuario
+[33me0af3fd[m corrige botoes admin ativar desativar e validade
+[33mf32b3a4[m corrige painel admin usuarios
+[33mc0b9052[m corrige chave supabase no admin
+[33m9689430[m corrige painel admin e adiciona editar validade usuario
+[33m4af47c9[m melhora painel admin: ativar desativar e editar validade
+[33me109c3e[m Adiciona busca de produtos
+[33m40a7fdd[m Adiciona botão meus produtos na calculadora
+[33me042fb6[m Adiciona botão de produtos na calculadora
+[33m3b0d5f8[m Adiciona categoria nos produtos
+[33maac0ff5[m primeiro envio calcula facil
