@@ -28,6 +28,7 @@ if (sessao) {
             sessao.nome || sessao.usuario;
 
     }
+
 }
 
 
@@ -35,17 +36,29 @@ if (sessao) {
    CAMPOS
 ========================================== */
 
+const campoPB =
+    document.getElementById("pb");
+
+
+const campoD =
+    document.getElementById("d");
+
+
 const campoPC =
     document.getElementById("pc");
+
 
 const campoLucro =
     document.getElementById("lucro");
 
+
 const campoTF =
     document.getElementById("tf");
 
+
 const campoPD =
     document.getElementById("pd");
+
 
 const campoImposto =
     document.getElementById("imposto");
@@ -58,6 +71,7 @@ const campoImposto =
 const resultado =
     document.getElementById("resultado");
 
+
 const detalhes =
     document.getElementById("detalhes");
 
@@ -68,10 +82,95 @@ const detalhes =
 
 function formatarNumero(numero) {
 
-    return Number(numero).toLocaleString("pt-BR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 6
-    });
+    return Number(numero).toLocaleString(
+        "pt-BR",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6
+        }
+    );
+
+}
+
+
+/* ==========================================
+   CALCULAR PREÇO DE CUSTO
+========================================== */
+
+function calcularPrecoCusto() {
+
+    const PB =
+        parseFloat(campoPB.value);
+
+
+    const D =
+        parseFloat(campoD.value);
+
+
+    /* ======================================
+       CAMPOS NECESSÁRIOS PARA PC
+    ====================================== */
+
+    if (
+        isNaN(PB) ||
+        isNaN(D)
+    ) {
+
+        campoPC.value = "";
+
+        return null;
+
+    }
+
+
+    /* ======================================
+       VALIDAR PREÇO BRUTO
+    ====================================== */
+
+    if (PB < 0) {
+
+        campoPC.value = "";
+
+        return null;
+
+    }
+
+
+    /* ======================================
+       VALIDAR DESCONTO
+    ====================================== */
+
+    if (
+        D < 0 ||
+        D >= 100
+    ) {
+
+        campoPC.value = "";
+
+        return null;
+
+    }
+
+
+    /* ======================================
+       CÁLCULO DO PC
+       
+       PC = PB × (1 - D / 100)
+    ====================================== */
+
+    const PC =
+        PB * (1 - D / 100);
+
+
+    /* ======================================
+       PREENCHER PC AUTOMATICAMENTE
+    ====================================== */
+
+    campoPC.value =
+        PC.toFixed(6);
+
+
+    return PC;
 
 }
 
@@ -82,17 +181,26 @@ function formatarNumero(numero) {
 
 function calcular() {
 
+
+    /* ======================================
+       CALCULAR PC AUTOMATICAMENTE
+    ====================================== */
+
     const PC =
-        parseFloat(campoPC.value);
+        calcularPrecoCusto();
+
 
     const L =
         parseFloat(campoLucro.value);
 
+
     const TF =
         parseFloat(campoTF.value);
 
+
     const PD =
         parseFloat(campoPD.value);
+
 
     const I =
         parseFloat(campoImposto.value);
@@ -103,7 +211,7 @@ function calcular() {
     ====================================== */
 
     if (
-        isNaN(PC) ||
+        PC === null ||
         isNaN(L) ||
         isNaN(TF) ||
         isNaN(PD) ||
@@ -113,69 +221,114 @@ function calcular() {
         resultado.textContent =
             "R$ 0,00";
 
+
         detalhes.innerHTML =
-            "Preencha os cinco campos para realizar o cálculo.";
+            "Preencha PB, D, L, TF, PD e I para realizar o cálculo.";
+
 
         return;
+
     }
 
 
     /* ======================================
-       VALIDAÇÕES
+       VALIDAÇÃO DO PC
     ====================================== */
 
     if (PC < 0) {
 
-        resultado.textContent = "Erro";
+        resultado.textContent =
+            "Erro";
+
 
         detalhes.textContent =
             "O preço de custo não pode ser negativo.";
 
+
         return;
+
     }
 
 
+    /* ======================================
+       VALIDAÇÃO DO LUCRO
+    ====================================== */
+
     if (L < 0) {
 
-        resultado.textContent = "Erro";
+        resultado.textContent =
+            "Erro";
+
 
         detalhes.textContent =
             "O lucro não pode ser negativo.";
 
+
         return;
+
     }
 
 
+    /* ======================================
+       VALIDAÇÃO DA TAXA FIXA
+    ====================================== */
+
     if (TF < 0) {
 
-        resultado.textContent = "Erro";
+        resultado.textContent =
+            "Erro";
+
 
         detalhes.textContent =
             "A taxa fixa não pode ser negativa.";
 
+
         return;
+
     }
 
 
-    if (PD < 0 || PD >= 100) {
+    /* ======================================
+       VALIDAÇÃO DO DESCONTO DA VENDA
+    ====================================== */
 
-        resultado.textContent = "Erro";
+    if (
+        PD < 0 ||
+        PD >= 100
+    ) {
+
+        resultado.textContent =
+            "Erro";
+
 
         detalhes.textContent =
-            "O desconto deve estar entre 0% e 99,99%.";
+            "O desconto da venda deve estar entre 0% e 99,99%.";
+
 
         return;
+
     }
 
 
-    if (I < 0 || I >= 100) {
+    /* ======================================
+       VALIDAÇÃO DO IMPOSTO
+    ====================================== */
 
-        resultado.textContent = "Erro";
+    if (
+        I < 0 ||
+        I >= 100
+    ) {
+
+        resultado.textContent =
+            "Erro";
+
 
         detalhes.textContent =
             "O imposto deve estar entre 0% e 99,99%.";
 
+
         return;
+
     }
 
 
@@ -211,14 +364,20 @@ function calcular() {
        VALIDAR DENOMINADOR
     ====================================== */
 
-    if (percentualDenominador <= 0) {
+    if (
+        percentualDenominador <= 0
+    ) {
 
-        resultado.textContent = "Erro";
+        resultado.textContent =
+            "Erro";
+
 
         detalhes.textContent =
             "O desconto + imposto não podem resultar em um denominador igual ou menor que zero.";
 
+
         return;
+
     }
 
 
@@ -267,7 +426,8 @@ function calcular() {
     ====================================== */
 
     resultado.textContent =
-        "R$ " + formatarNumero(resultadoFinal);
+        "R$ " +
+        formatarNumero(resultadoFinal);
 
 
     /* ======================================
@@ -278,18 +438,64 @@ function calcular() {
 
 
     /* ======================================
+       PB
+    ====================================== */
+
+    const linhaPB =
+        document.createElement("div");
+
+
+    linhaPB.innerHTML =
+        "<strong>PB — Preço Bruto:</strong> " +
+        "R$ " +
+        formatarNumero(
+            parseFloat(campoPB.value)
+        );
+
+
+    detalhes.appendChild(
+        linhaPB
+    );
+
+
+    /* ======================================
+       D
+    ====================================== */
+
+    const linhaD =
+        document.createElement("div");
+
+
+    linhaD.innerHTML =
+        "<strong>D — Desconto:</strong> " +
+        formatarNumero(
+            parseFloat(campoD.value)
+        ) +
+        "%";
+
+
+    detalhes.appendChild(
+        linhaD
+    );
+
+
+    /* ======================================
        PC
     ====================================== */
 
     const linhaPC =
         document.createElement("div");
 
+
     linhaPC.innerHTML =
         "<strong>PC — Preço de Custo:</strong> " +
         "R$ " +
         formatarNumero(PC);
 
-    detalhes.appendChild(linhaPC);
+
+    detalhes.appendChild(
+        linhaPC
+    );
 
 
     /* ======================================
@@ -299,12 +505,16 @@ function calcular() {
     const linhaLucro =
         document.createElement("div");
 
+
     linhaLucro.innerHTML =
         "<strong>L — Lucro Líquido:</strong> " +
         "R$ " +
         formatarNumero(valorLucro);
 
-    detalhes.appendChild(linhaLucro);
+
+    detalhes.appendChild(
+        linhaLucro
+    );
 
 
     /* ======================================
@@ -314,27 +524,35 @@ function calcular() {
     const linhaTF =
         document.createElement("div");
 
+
     linhaTF.innerHTML =
         "<strong>TF — Taxa Fixa:</strong> " +
         "R$ " +
         formatarNumero(TF);
 
-    detalhes.appendChild(linhaTF);
+
+    detalhes.appendChild(
+        linhaTF
+    );
 
 
     /* ======================================
-       DESCONTO
+       PD — DESCONTO DA VENDA
     ====================================== */
 
     const linhaPD =
         document.createElement("div");
+
 
     linhaPD.innerHTML =
         "<strong>PD — Desconto:</strong> " +
         "R$ " +
         formatarNumero(valorDesconto);
 
-    detalhes.appendChild(linhaPD);
+
+    detalhes.appendChild(
+        linhaPD
+    );
 
 
     /* ======================================
@@ -344,12 +562,16 @@ function calcular() {
     const linhaI =
         document.createElement("div");
 
+
     linhaI.innerHTML =
         "<strong>I — Imposto:</strong> " +
         "R$ " +
         formatarNumero(valorImposto);
 
-    detalhes.appendChild(linhaI);
+
+    detalhes.appendChild(
+        linhaI
+    );
 
 
     /* ======================================
@@ -359,12 +581,16 @@ function calcular() {
     const linhaLiquido =
         document.createElement("div");
 
+
     linhaLiquido.innerHTML =
         "<strong>💰 LUCRO LÍQUIDO:</strong> " +
         "R$ " +
         formatarNumero(valorLiquido);
 
-    detalhes.appendChild(linhaLiquido);
+
+    detalhes.appendChild(
+        linhaLiquido
+    );
 
 }
 
@@ -373,25 +599,35 @@ function calcular() {
    CALCULAR AUTOMATICAMENTE
 ========================================== */
 
-campoPC.addEventListener(
+campoPB.addEventListener(
     "input",
     calcular
 );
+
+
+campoD.addEventListener(
+    "input",
+    calcular
+);
+
 
 campoLucro.addEventListener(
     "input",
     calcular
 );
 
+
 campoTF.addEventListener(
     "input",
     calcular
 );
 
+
 campoPD.addEventListener(
     "input",
     calcular
 );
+
 
 campoImposto.addEventListener(
     "input",

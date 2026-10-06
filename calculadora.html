@@ -160,8 +160,76 @@
 
 
             </div>
-                        <!-- ==================================
-                 PREÇO DE CUSTO
+
+
+
+            <!-- ==================================
+                 PREÇO BRUTO
+            =================================== -->
+
+            <div class="campo">
+
+                <label for="pb">
+
+                    PB — Preço Bruto
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="pb"
+                    placeholder="Ex.: 13,20"
+                    step="any"
+                    min="0"
+                >
+
+
+                <div class="descricao">
+
+                    Informe o preço bruto antes do desconto.
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==================================
+                 DESCONTO DO PREÇO BRUTO
+            =================================== -->
+
+            <div class="campo">
+
+                <label for="d">
+
+                    D — Desconto (%)
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="d"
+                    placeholder="Ex.: 23,5"
+                    step="any"
+                    min="0"
+                    max="99.99"
+                >
+
+
+                <div class="descricao">
+
+                    Informe o percentual de desconto para chegar ao preço de custo.
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==================================
+                 PREÇO DE CUSTO AUTOMÁTICO
             =================================== -->
 
             <div class="campo">
@@ -176,15 +244,16 @@
                 <input
                     type="number"
                     id="pc"
-                    placeholder="Ex.: 10,00"
+                    placeholder="Calculado automaticamente"
                     step="any"
                     min="0"
+                    readonly
                 >
 
 
                 <div class="descricao">
 
-                    Informe o preço de custo.
+                    Calculado automaticamente a partir do preço bruto e do desconto.
 
                 </div>
 
@@ -257,7 +326,7 @@
 
 
             <!-- ==================================
-                 DESCONTO
+                 DESCONTO DA VENDA
             =================================== -->
 
             <div class="campo">
@@ -281,7 +350,7 @@
 
                 <div class="descricao">
 
-                    Informe o percentual de desconto.
+                    Informe o percentual de desconto da venda.
 
                 </div>
 
@@ -360,7 +429,7 @@
                     id="detalhes"
                 >
 
-                    Preencha os cinco campos para realizar o cálculo.
+                    Preencha PB, D, L, TF, PD e I para realizar o cálculo.
 
                 </div>
 
@@ -372,7 +441,10 @@
 
 
     </div>
-        <!-- ==========================================
+
+
+
+    <!-- ==========================================
          LOGIN / SESSÃO
     =========================================== -->
 
