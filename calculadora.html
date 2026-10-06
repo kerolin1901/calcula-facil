@@ -21,10 +21,6 @@
     >
 
 
-    <!-- ==========================================
-         AJUSTES DA LOGO
-    =========================================== -->
-
     <style>
 
         .calculator-header {
@@ -73,6 +69,101 @@
         }
 
 
+        /* ==========================================
+           SELECIONAR PRODUTO
+        =========================================== */
+
+        .selecionar-produto {
+
+            margin-top: 16px;
+            margin-bottom: 18px;
+            padding: 15px;
+            background: #f7f9fd;
+            border: 1px solid #e3e8f2;
+            border-radius: 12px;
+
+        }
+
+
+        .selecionar-produto label {
+
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #334;
+
+        }
+
+
+        .selecionar-produto select {
+
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #ccd5e4;
+            border-radius: 8px;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+
+        }
+
+
+        .selecionar-produto select:focus {
+
+            outline: none;
+            border-color: #125bea;
+
+        }
+
+
+        .descricao-produto {
+
+            margin-top: 7px;
+            font-size: 12px;
+            color: #777;
+
+        }
+
+
+        /* ==========================================
+           BOTÃO SALVAR PRODUTO
+        =========================================== */
+
+        .btn-salvar-produto {
+
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #168544;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+
+        }
+
+
+        .btn-salvar-produto:disabled {
+
+            background: #bfc8d4;
+            cursor: not-allowed;
+
+        }
+
+
+        .mensagem-salvar-produto {
+
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+
+        }
+
+
         @media (max-width: 600px) {
 
             .calculator-icon img {
@@ -99,7 +190,9 @@
         <div class="calculator-card">
 
 
-            <!-- LOGO -->
+            <!-- ==================================
+                 LOGO
+            =================================== -->
 
             <div class="calculator-header">
 
@@ -115,7 +208,9 @@
             </div>
 
 
-            <!-- USUÁRIO -->
+            <!-- ==================================
+                 USUÁRIO
+            =================================== -->
 
             <div class="user-bar">
 
@@ -157,6 +252,64 @@
 
 
                 </div>
+
+
+            </div>
+
+
+
+            <!-- ==========================================
+                 SELECIONAR PRODUTO
+            =========================================== -->
+
+            <div class="selecionar-produto">
+
+
+                <label for="produtoSelecionado">
+
+                    📦 Selecionar Produto
+
+                </label>
+
+
+                <select
+                    id="produtoSelecionado"
+                >
+
+                    <option value="">
+
+                        Selecione um produto cadastrado
+
+                    </option>
+
+                </select>
+
+
+                <div class="descricao-produto">
+
+                    Selecione um produto para preencher automaticamente a calculadora.
+
+                </div>
+
+
+                <!-- BOTÃO DE SALVAR -->
+
+                <button
+                    type="button"
+                    id="btnSalvarProdutoCalculadora"
+                    class="btn-salvar-produto"
+                    disabled
+                >
+
+                    💾 Salvar alterações
+
+                </button>
+
+
+                <div
+                    id="mensagemSalvarProduto"
+                    class="mensagem-salvar-produto"
+                ></div>
 
 
             </div>
@@ -229,7 +382,7 @@
 
 
             <!-- ==================================
-                 PREÇO DE CUSTO AUTOMÁTICO
+                 PREÇO DE CUSTO
             =================================== -->
 
             <div class="campo">
@@ -445,12 +598,21 @@
 
 
     <!-- ==========================================
-         LOGIN / SESSÃO
+         SUPABASE
+    =========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+
+    <!-- ==========================================
+         LOGIN
     =========================================== -->
 
     <script
         src="login.js?v=3"
-        defer
     ></script>
 
 
@@ -461,7 +623,6 @@
 
     <script
         src="calculadora.js?v=5"
-        defer
     ></script>
 
 

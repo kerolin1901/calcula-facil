@@ -33,35 +33,63 @@ if (sessao) {
 
 
 /* ==========================================
-   CAMPOS
+   CAMPOS DA CALCULADORA
 ========================================== */
 
 const campoPB =
     document.getElementById("pb");
 
-
 const campoD =
     document.getElementById("d");
-
 
 const campoPC =
     document.getElementById("pc");
 
-
 const campoLucro =
     document.getElementById("lucro");
-
 
 const campoTF =
     document.getElementById("tf");
 
-
 const campoPD =
     document.getElementById("pd");
 
-
 const campoImposto =
     document.getElementById("imposto");
+
+
+/* ==========================================
+   SELEÇÃO DE PRODUTO
+========================================== */
+
+const produtoSelecionado =
+    document.getElementById("produtoSelecionado");
+
+
+let produtosCalculadora = [];
+
+
+/* ==========================================
+   BOTÃO SALVAR
+========================================== */
+
+const btnSalvarProdutoCalculadora =
+    document.getElementById(
+        "btnSalvarProdutoCalculadora"
+    );
+
+
+const mensagemSalvarProduto =
+    document.getElementById(
+        "mensagemSalvarProduto"
+    );
+
+
+/* ==========================================
+   PRODUTO ATUAL
+========================================== */
+
+let produtoAtualId = null;
 
 
 /* ==========================================
@@ -77,7 +105,7 @@ const detalhes =
 
 
 /* ==========================================
-   FORMATAÇÃO DE NÚMEROS
+   FORMATAÇÃO
 ========================================== */
 
 function formatarNumero(numero) {
@@ -94,10 +122,340 @@ function formatarNumero(numero) {
 
 
 /* ==========================================
-   CALCULAR PREÇO DE CUSTO
+   MENSAGEM DO BOTÃO
 ========================================== */
 
-function calcularPrecoCusto() {
+function mostrarMensagemSalvar(
+    texto,
+    erro = false
+) {
+
+    if (!mensagemSalvarProduto) {
+        return;
+    }
+
+
+    mensagemSalvarProduto.textContent =
+        texto;
+
+
+    mensagemSalvarProduto.style.color =
+        erro
+            ? "#c62828"
+            : "#168544";
+
+}
+
+
+/* ==========================================
+   MARCAR ALTERAÇÃO
+========================================== */
+
+function marcarAlteracaoProduto() {
+
+    if (
+        !produtoAtualId ||
+        !btnSalvarProdutoCalculadora
+    ) {
+
+        return;
+
+    }
+
+
+    btnSalvarProdutoCalculadora.disabled =
+        false;
+
+
+    mostrarMensagemSalvar(
+        "Existem alterações não salvas."
+    );
+
+}
+
+
+/* ==========================================
+   CARREGAR PRODUTOS
+========================================== */
+
+async function carregarProdutosCalculadora() {
+
+    if (!produtoSelecionado) {
+
+        return;
+
+    }
+
+
+    produtoSelecionado.innerHTML = `
+        <option value="">
+            Carregando produtos...
+        </option>
+    `;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (error) {
+
+        console.error(
+            "Erro ao identificar usuário:",
+            error
+        );
+
+
+        produtoSelecionado.innerHTML = `
+            <option value="">
+                Erro ao carregar produtos
+            </option>
+        `;
+
+
+        return;
+
+    }
+
+
+    const usuario =
+        data.user;
+
+
+    if (!usuario) {
+
+        produtoSelecionado.innerHTML = `
+            <option value="">
+                Usuário não identificado
+            </option>
+        `;
+
+
+        return;
+
+    }
+
+
+    const {
+        data: produtos,
+        error: erroProdutos
+    } =
+        await supabaseClient
+            .from("produtos")
+            .select(`
+                id,
+                nome,
+                preco_bruto,
+                desconto_custo_percentual,
+                preco_custo,
+                lucro_percentual,
+                taxa_fixa,
+                desconto_percentual,
+                imposto_percentual
+            `)
+            .eq(
+                "usuario_id",
+                usuario.id
+            )
+            .order(
+                "nome",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (erroProdutos) {
+
+        console.error(
+            "Erro ao carregar produtos:",
+            erroProdutos
+        );
+
+
+        produtoSelecionado.innerHTML = `
+            <option value="">
+                Erro ao carregar produtos
+            </option>
+        `;
+
+
+        return;
+
+    }
+
+
+    produtosCalculadora =
+        produtos || [];
+
+
+    if (
+        produtosCalculadora.length === 0
+    ) {
+
+        produtoSelecionado.innerHTML = `
+            <option value="">
+                Nenhum produto cadastrado
+            </option>
+        `;
+
+
+        return;
+
+    }
+
+
+    produtoSelecionado.innerHTML = `
+        <option value="">
+            Selecione um produto cadastrado
+        </option>
+    `;
+
+
+    produtosCalculadora.forEach(
+        function(produto) {
+
+            const opcao =
+                document.createElement("option");
+
+
+            opcao.value =
+                produto.id;
+
+
+            opcao.textContent =
+                produto.nome;
+
+
+            produtoSelecionado.appendChild(
+                opcao
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   SELECIONAR PRODUTO
+========================================== */
+
+function preencherCalculadoraComProduto() {
+
+    const id =
+        produtoSelecionado.value;
+
+
+    produtoAtualId =
+        id || null;
+
+
+    if (!id) {
+
+        btnSalvarProdutoCalculadora.disabled =
+            true;
+
+
+        mostrarMensagemSalvar("");
+
+        return;
+
+    }
+
+
+    const produto =
+        produtosCalculadora.find(
+            function(item) {
+
+                return String(item.id) === String(id);
+
+            }
+        );
+
+
+    if (!produto) {
+
+        return;
+
+    }
+
+
+    const PB =
+        produto.preco_bruto !== null &&
+        produto.preco_bruto !== undefined
+            ? produto.preco_bruto
+            : produto.preco_custo;
+
+
+    const D =
+        produto.desconto_custo_percentual !== null &&
+        produto.desconto_custo_percentual !== undefined
+            ? produto.desconto_custo_percentual
+            : 0;
+
+
+    campoPB.value =
+        PB !== null &&
+        PB !== undefined
+            ? PB
+            : "";
+
+
+    campoD.value =
+        D;
+
+
+    campoLucro.value =
+        produto.lucro_percentual !== null &&
+        produto.lucro_percentual !== undefined
+            ? produto.lucro_percentual
+            : "";
+
+
+    campoTF.value =
+        produto.taxa_fixa !== null &&
+        produto.taxa_fixa !== undefined
+            ? produto.taxa_fixa
+            : "";
+
+
+    campoPD.value =
+        produto.desconto_percentual !== null &&
+        produto.desconto_percentual !== undefined
+            ? produto.desconto_percentual
+            : "";
+
+
+    campoImposto.value =
+        produto.imposto_percentual !== null &&
+        produto.imposto_percentual !== undefined
+            ? produto.imposto_percentual
+            : "";
+
+
+    btnSalvarProdutoCalculadora.disabled =
+        true;
+
+
+    mostrarMensagemSalvar(
+        "Produto carregado. Altere algum campo para salvar."
+    );
+
+
+    calcular();
+
+}
+
+
+/* ==========================================
+   VALIDAR E CALCULAR VALORES
+========================================== */
+
+function obterValoresCalculadora() {
 
     const PB =
         parseFloat(campoPB.value);
@@ -105,89 +463,6 @@ function calcularPrecoCusto() {
 
     const D =
         parseFloat(campoD.value);
-
-
-    /* ======================================
-       CAMPOS NECESSÁRIOS PARA PC
-    ====================================== */
-
-    if (
-        isNaN(PB) ||
-        isNaN(D)
-    ) {
-
-        campoPC.value = "";
-
-        return null;
-
-    }
-
-
-    /* ======================================
-       VALIDAR PREÇO BRUTO
-    ====================================== */
-
-    if (PB < 0) {
-
-        campoPC.value = "";
-
-        return null;
-
-    }
-
-
-    /* ======================================
-       VALIDAR DESCONTO
-    ====================================== */
-
-    if (
-        D < 0 ||
-        D >= 100
-    ) {
-
-        campoPC.value = "";
-
-        return null;
-
-    }
-
-
-    /* ======================================
-       CÁLCULO DO PC
-       
-       PC = PB × (1 - D / 100)
-    ====================================== */
-
-    const PC =
-        PB * (1 - D / 100);
-
-
-    /* ======================================
-       PREENCHER PC AUTOMATICAMENTE
-    ====================================== */
-
-    campoPC.value =
-        PC.toFixed(6);
-
-
-    return PC;
-
-}
-
-
-/* ==========================================
-   CALCULAR
-========================================== */
-
-function calcular() {
-
-
-    /* ======================================
-       CALCULAR PC AUTOMATICAMENTE
-    ====================================== */
-
-    const PC =
-        calcularPrecoCusto();
 
 
     const L =
@@ -206,12 +481,461 @@ function calcular() {
         parseFloat(campoImposto.value);
 
 
-    /* ======================================
-       CAMPOS VAZIOS
-    ====================================== */
+    if (
+        isNaN(PB) ||
+        isNaN(D) ||
+        isNaN(L) ||
+        isNaN(TF) ||
+        isNaN(PD) ||
+        isNaN(I)
+    ) {
+
+        return {
+            erro:
+                "Preencha todos os campos."
+        };
+
+    }
+
+
+    if (PB < 0) {
+
+        return {
+            erro:
+                "O preço bruto não pode ser negativo."
+        };
+
+    }
+
 
     if (
-        PC === null ||
+        D < 0 ||
+        D >= 100
+    ) {
+
+        return {
+            erro:
+                "O desconto deve estar entre 0% e 99,99%."
+        };
+
+    }
+
+
+    if (L < 0) {
+
+        return {
+            erro:
+                "O lucro não pode ser negativo."
+        };
+
+    }
+
+
+    if (TF < 0) {
+
+        return {
+            erro:
+                "A taxa fixa não pode ser negativa."
+        };
+
+    }
+
+
+    if (
+        PD < 0 ||
+        PD >= 100
+    ) {
+
+        return {
+            erro:
+                "O desconto da venda deve estar entre 0% e 99,99%."
+        };
+
+    }
+
+
+    if (
+        I < 0 ||
+        I >= 100
+    ) {
+
+        return {
+            erro:
+                "O imposto deve estar entre 0% e 99,99%."
+        };
+
+    }
+
+
+    const PC =
+        PB * (1 - D / 100);
+
+
+    const lucroSobrePC =
+        PC * (L / 100);
+
+
+    const numerador =
+        PC +
+        lucroSobrePC +
+        TF;
+
+
+    const percentualDenominador =
+        100 -
+        PD -
+        I;
+
+
+    if (
+        percentualDenominador <= 0
+    ) {
+
+        return {
+            erro:
+                "O desconto + imposto não podem resultar em um denominador igual ou menor que zero."
+        };
+
+    }
+
+
+    const denominador =
+        percentualDenominador / 100;
+
+
+    const resultadoFinal =
+        numerador / denominador;
+
+
+    const valorDesconto =
+        resultadoFinal * (PD / 100);
+
+
+    const valorImposto =
+        resultadoFinal * (I / 100);
+
+
+    const valorLiquido =
+        resultadoFinal -
+        PC -
+        TF -
+        valorDesconto -
+        valorImposto;
+
+
+    return {
+
+        erro: null,
+
+        PB: PB,
+
+        D: D,
+
+        PC: PC,
+
+        L: L,
+
+        TF: TF,
+
+        PD: PD,
+
+        I: I,
+
+        precoVenda:
+            resultadoFinal,
+
+        lucroLiquido:
+            valorLiquido
+
+    };
+
+}
+
+
+/* ==========================================
+   SALVAR ALTERAÇÕES
+========================================== */
+
+async function salvarAlteracoesProduto() {
+
+    if (!produtoAtualId) {
+
+        mostrarMensagemSalvar(
+            "Selecione um produto primeiro.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    btnSalvarProdutoCalculadora.disabled =
+        true;
+
+
+    mostrarMensagemSalvar(
+        "Salvando..."
+    );
+
+
+    const valores =
+        obterValoresCalculadora();
+
+
+    if (valores.erro) {
+
+        btnSalvarProdutoCalculadora.disabled =
+            false;
+
+
+        mostrarMensagemSalvar(
+            valores.erro,
+            true
+        );
+
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (error || !data.user) {
+
+        btnSalvarProdutoCalculadora.disabled =
+            false;
+
+
+        mostrarMensagemSalvar(
+            "Sessão expirada.",
+            true
+        );
+
+
+        return;
+
+    }
+
+
+    const usuario =
+        data.user;
+
+
+    const {
+        error: erroSalvar
+    } =
+        await supabaseClient
+            .from("produtos")
+            .update({
+
+                preco_bruto:
+                    Number(
+                        valores.PB
+                    ),
+
+                desconto_custo_percentual:
+                    Number(
+                        valores.D
+                    ),
+
+                preco_custo:
+                    Number(
+                        valores.PC.toFixed(6)
+                    ),
+
+                lucro_percentual:
+                    Number(
+                        valores.L
+                    ),
+
+                taxa_fixa:
+                    Number(
+                        valores.TF
+                    ),
+
+                desconto_percentual:
+                    Number(
+                        valores.PD
+                    ),
+
+                imposto_percentual:
+                    Number(
+                        valores.I
+                    ),
+
+                preco_venda:
+                    Number(
+                        valores.precoVenda.toFixed(2)
+                    ),
+
+                lucro_liquido:
+                    Number(
+                        valores.lucroLiquido.toFixed(2)
+                    ),
+
+                atualizado_em:
+                    new Date().toISOString()
+
+            })
+            .eq(
+                "id",
+                produtoAtualId
+            )
+            .eq(
+                "usuario_id",
+                usuario.id
+            );
+
+
+    if (erroSalvar) {
+
+        console.error(
+            "Erro ao salvar produto:",
+            erroSalvar
+        );
+
+
+        btnSalvarProdutoCalculadora.disabled =
+            false;
+
+
+        mostrarMensagemSalvar(
+            "Erro ao salvar as alterações.",
+            true
+        );
+
+
+        return;
+
+    }
+
+
+    /* ======================================
+       ATUALIZAR PRODUTO NA MEMÓRIA
+    ====================================== */
+
+    const indice =
+        produtosCalculadora.findIndex(
+            function(produto) {
+
+                return String(produto.id) ===
+                    String(produtoAtualId);
+
+            }
+        );
+
+
+    if (indice !== -1) {
+
+        produtosCalculadora[indice] = {
+
+            ...produtosCalculadora[indice],
+
+            preco_bruto:
+                valores.PB,
+
+            desconto_custo_percentual:
+                valores.D,
+
+            preco_custo:
+                valores.PC,
+
+            lucro_percentual:
+                valores.L,
+
+            taxa_fixa:
+                valores.TF,
+
+            desconto_percentual:
+                valores.PD,
+
+            imposto_percentual:
+                valores.I
+
+        };
+
+    }
+
+
+    btnSalvarProdutoCalculadora.disabled =
+        true;
+
+
+    mostrarMensagemSalvar(
+        "✅ Alterações salvas com sucesso!"
+    );
+
+}
+
+
+/* ==========================================
+   CÁLCULO
+========================================== */
+
+function calcular() {
+
+    const PB =
+        parseFloat(campoPB.value);
+
+
+    const D =
+        parseFloat(campoD.value);
+
+
+    const L =
+        parseFloat(campoLucro.value);
+
+
+    const TF =
+        parseFloat(campoTF.value);
+
+
+    const PD =
+        parseFloat(campoPD.value);
+
+
+    const I =
+        parseFloat(campoImposto.value);
+
+
+    if (
+        !isNaN(PB) &&
+        !isNaN(D) &&
+        PB >= 0 &&
+        D >= 0 &&
+        D < 100
+    ) {
+
+        const PC =
+            PB * (1 - D / 100);
+
+
+        campoPC.value =
+            PC.toFixed(6);
+
+    } else {
+
+        campoPC.value =
+            "";
+
+    }
+
+
+    const PC =
+        parseFloat(
+            campoPC.value
+        );
+
+
+    if (
+        isNaN(PC) ||
         isNaN(L) ||
         isNaN(TF) ||
         isNaN(PD) ||
@@ -231,66 +955,60 @@ function calcular() {
     }
 
 
-    /* ======================================
-       VALIDAÇÃO DO PC
-    ====================================== */
-
-    if (PC < 0) {
+    if (PB < 0) {
 
         resultado.textContent =
             "Erro";
 
-
         detalhes.textContent =
-            "O preço de custo não pode ser negativo.";
-
+            "O preço bruto não pode ser negativo.";
 
         return;
 
     }
 
 
-    /* ======================================
-       VALIDAÇÃO DO LUCRO
-    ====================================== */
+    if (
+        D < 0 ||
+        D >= 100
+    ) {
+
+        resultado.textContent =
+            "Erro";
+
+        detalhes.textContent =
+            "O desconto deve estar entre 0% e 99,99%.";
+
+        return;
+
+    }
+
 
     if (L < 0) {
 
         resultado.textContent =
             "Erro";
 
-
         detalhes.textContent =
             "O lucro não pode ser negativo.";
-
 
         return;
 
     }
 
-
-    /* ======================================
-       VALIDAÇÃO DA TAXA FIXA
-    ====================================== */
 
     if (TF < 0) {
 
         resultado.textContent =
             "Erro";
 
-
         detalhes.textContent =
             "A taxa fixa não pode ser negativa.";
-
 
         return;
 
     }
 
-
-    /* ======================================
-       VALIDAÇÃO DO DESCONTO DA VENDA
-    ====================================== */
 
     if (
         PD < 0 ||
@@ -300,19 +1018,13 @@ function calcular() {
         resultado.textContent =
             "Erro";
 
-
         detalhes.textContent =
             "O desconto da venda deve estar entre 0% e 99,99%.";
-
 
         return;
 
     }
 
-
-    /* ======================================
-       VALIDAÇÃO DO IMPOSTO
-    ====================================== */
 
     if (
         I < 0 ||
@@ -322,27 +1034,17 @@ function calcular() {
         resultado.textContent =
             "Erro";
 
-
         detalhes.textContent =
             "O imposto deve estar entre 0% e 99,99%.";
-
 
         return;
 
     }
 
 
-    /* ======================================
-       LUCRO SOBRE O PREÇO DE CUSTO
-    ====================================== */
-
     const lucroSobrePC =
         PC * (L / 100);
 
-
-    /* ======================================
-       NUMERADOR
-    ====================================== */
 
     const numerador =
         PC +
@@ -350,19 +1052,11 @@ function calcular() {
         TF;
 
 
-    /* ======================================
-       DENOMINADOR
-    ====================================== */
-
     const percentualDenominador =
         100 -
         PD -
         I;
 
-
-    /* ======================================
-       VALIDAR DENOMINADOR
-    ====================================== */
 
     if (
         percentualDenominador <= 0
@@ -371,46 +1065,30 @@ function calcular() {
         resultado.textContent =
             "Erro";
 
-
         detalhes.textContent =
             "O desconto + imposto não podem resultar em um denominador igual ou menor que zero.";
-
 
         return;
 
     }
 
 
-    /* ======================================
-       CONVERTER DENOMINADOR
-    ====================================== */
-
     const denominador =
         percentualDenominador / 100;
 
-
-    /* ======================================
-       CÁLCULO FINAL
-    ====================================== */
 
     const resultadoFinal =
         numerador / denominador;
 
 
-    /* ======================================
-       VALORES EM REAIS
-    ====================================== */
-
-    const valorLucro =
-        lucroSobrePC;
-
-
     const valorDesconto =
-        resultadoFinal * (PD / 100);
+        resultadoFinal *
+        (PD / 100);
 
 
     const valorImposto =
-        resultadoFinal * (I / 100);
+        resultadoFinal *
+        (I / 100);
 
 
     const valorLiquido =
@@ -421,172 +1099,115 @@ function calcular() {
         valorImposto;
 
 
-    /* ======================================
-       MOSTRAR RESULTADO
-    ====================================== */
-
     resultado.textContent =
         "R$ " +
-        formatarNumero(resultadoFinal);
+        formatarNumero(
+            resultadoFinal
+        );
 
 
-    /* ======================================
-       LIMPAR DETALHES
-    ====================================== */
+    detalhes.innerHTML =
+        "";
 
-    detalhes.innerHTML = "";
-
-
-    /* ======================================
-       PB
-    ====================================== */
 
     const linhaPB =
         document.createElement("div");
 
-
     linhaPB.innerHTML =
         "<strong>PB — Preço Bruto:</strong> " +
         "R$ " +
-        formatarNumero(
-            parseFloat(campoPB.value)
-        );
-
+        formatarNumero(PB);
 
     detalhes.appendChild(
         linhaPB
     );
 
 
-    /* ======================================
-       D
-    ====================================== */
-
     const linhaD =
         document.createElement("div");
 
-
     linhaD.innerHTML =
         "<strong>D — Desconto:</strong> " +
-        formatarNumero(
-            parseFloat(campoD.value)
-        ) +
+        formatarNumero(D) +
         "%";
-
 
     detalhes.appendChild(
         linhaD
     );
 
 
-    /* ======================================
-       PC
-    ====================================== */
-
     const linhaPC =
         document.createElement("div");
-
 
     linhaPC.innerHTML =
         "<strong>PC — Preço de Custo:</strong> " +
         "R$ " +
         formatarNumero(PC);
 
-
     detalhes.appendChild(
         linhaPC
     );
 
 
-    /* ======================================
-       LUCRO
-    ====================================== */
-
     const linhaLucro =
         document.createElement("div");
-
 
     linhaLucro.innerHTML =
         "<strong>L — Lucro Líquido:</strong> " +
         "R$ " +
-        formatarNumero(valorLucro);
-
+        formatarNumero(lucroSobrePC);
 
     detalhes.appendChild(
         linhaLucro
     );
 
 
-    /* ======================================
-       TAXA FIXA
-    ====================================== */
-
     const linhaTF =
         document.createElement("div");
-
 
     linhaTF.innerHTML =
         "<strong>TF — Taxa Fixa:</strong> " +
         "R$ " +
         formatarNumero(TF);
 
-
     detalhes.appendChild(
         linhaTF
     );
 
 
-    /* ======================================
-       PD — DESCONTO DA VENDA
-    ====================================== */
-
     const linhaPD =
         document.createElement("div");
-
 
     linhaPD.innerHTML =
         "<strong>PD — Desconto:</strong> " +
         "R$ " +
         formatarNumero(valorDesconto);
 
-
     detalhes.appendChild(
         linhaPD
     );
 
 
-    /* ======================================
-       IMPOSTO
-    ====================================== */
-
     const linhaI =
         document.createElement("div");
-
 
     linhaI.innerHTML =
         "<strong>I — Imposto:</strong> " +
         "R$ " +
         formatarNumero(valorImposto);
 
-
     detalhes.appendChild(
         linhaI
     );
 
 
-    /* ======================================
-       LUCRO LÍQUIDO FINAL
-    ====================================== */
-
     const linhaLiquido =
         document.createElement("div");
-
 
     linhaLiquido.innerHTML =
         "<strong>💰 LUCRO LÍQUIDO:</strong> " +
         "R$ " +
         formatarNumero(valorLiquido);
-
 
     detalhes.appendChild(
         linhaLiquido
@@ -596,47 +1217,122 @@ function calcular() {
 
 
 /* ==========================================
-   CALCULAR AUTOMATICAMENTE
+   EVENTOS DA CALCULADORA
 ========================================== */
 
 campoPB.addEventListener(
     "input",
-    calcular
+    function() {
+
+        calcular();
+
+        marcarAlteracaoProduto();
+
+    }
 );
 
 
 campoD.addEventListener(
     "input",
-    calcular
+    function() {
+
+        calcular();
+
+        marcarAlteracaoProduto();
+
+    }
 );
 
 
 campoLucro.addEventListener(
     "input",
-    calcular
+    function() {
+
+        calcular();
+
+        marcarAlteracaoProduto();
+
+    }
 );
 
 
 campoTF.addEventListener(
     "input",
-    calcular
+    function() {
+
+        calcular();
+
+        marcarAlteracaoProduto();
+
+    }
 );
 
 
 campoPD.addEventListener(
     "input",
-    calcular
+    function() {
+
+        calcular();
+
+        marcarAlteracaoProduto();
+
+    }
 );
 
 
 campoImposto.addEventListener(
     "input",
-    calcular
+    function() {
+
+        calcular();
+
+        marcarAlteracaoProduto();
+
+    }
 );
 
 
 /* ==========================================
-   CALCULAR AO ABRIR
+   EVENTO SELECIONAR PRODUTO
 ========================================== */
 
-calcular();
+if (produtoSelecionado) {
+
+    produtoSelecionado.addEventListener(
+        "change",
+        preencherCalculadoraComProduto
+    );
+
+}
+
+
+/* ==========================================
+   EVENTO SALVAR
+========================================== */
+
+if (
+    btnSalvarProdutoCalculadora
+) {
+
+    btnSalvarProdutoCalculadora.addEventListener(
+        "click",
+        salvarAlteracoesProduto
+    );
+
+}
+
+
+/* ==========================================
+   INICIAR
+========================================== */
+
+async function iniciarCalculadora() {
+
+    await carregarProdutosCalculadora();
+
+    calcular();
+
+}
+
+
+iniciarCalculadora();
