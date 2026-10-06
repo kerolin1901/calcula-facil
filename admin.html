@@ -12,10 +12,126 @@
 
     <title>Calcula Fácil - Administração</title>
 
+
     <link
         rel="stylesheet"
         href="style.css"
     >
+
+
+    <style>
+
+        /* ==========================================
+           INDICADORES DO PAINEL
+        ========================================== */
+
+        .admin-indicadores {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .indicador-card {
+
+            background: #ffffff;
+
+            border-radius: 14px;
+
+            padding: 18px;
+
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.08);
+
+            border: 1px solid #e8edf5;
+
+        }
+
+
+        .indicador-titulo {
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #6b7280;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .indicador-numero {
+
+            font-size: 30px;
+
+            font-weight: 800;
+
+            line-height: 1;
+
+            color: #123b87;
+
+        }
+
+
+        .indicador-total {
+
+            border-top: 4px solid #125bea;
+
+        }
+
+
+        .indicador-ativos {
+
+            border-top: 4px solid #168544;
+
+        }
+
+
+        .indicador-vencidos {
+
+            border-top: 4px solid #d98c00;
+
+        }
+
+
+        .indicador-inativos {
+
+            border-top: 4px solid #c62828;
+
+        }
+
+
+        @media (max-width: 850px) {
+
+            .admin-indicadores {
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .admin-indicadores {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -26,7 +142,12 @@
 <div class="admin-container">
 
 
+    <!-- ======================================
+         CABEÇALHO
+    ======================================= -->
+
     <header class="admin-header">
+
 
         <div>
 
@@ -34,9 +155,11 @@
                 🧮 Calcula Fácil
             </div>
 
+
             <h1>
                 Painel Administrativo
             </h1>
+
 
             <p>
                 Gerenciamento de usuários
@@ -49,10 +172,128 @@
             class="btn-danger"
             onclick="sair()"
         >
+
             Sair
+
         </button>
 
+
     </header>
+
+
+
+    <!-- ======================================
+         INDICADORES
+    ======================================= -->
+
+    <section class="admin-indicadores">
+
+
+        <!-- TOTAL -->
+
+        <div
+            class="indicador-card indicador-total"
+        >
+
+            <div class="indicador-titulo">
+
+                TOTAL DE USUÁRIOS
+
+            </div>
+
+
+            <div
+                id="indicadorTotal"
+                class="indicador-numero"
+            >
+
+                0
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ATIVOS -->
+
+        <div
+            class="indicador-card indicador-ativos"
+        >
+
+            <div class="indicador-titulo">
+
+                ATIVOS
+
+            </div>
+
+
+            <div
+                id="indicadorAtivos"
+                class="indicador-numero"
+            >
+
+                0
+
+            </div>
+
+        </div>
+
+
+
+        <!-- VENCIDOS -->
+
+        <div
+            class="indicador-card indicador-vencidos"
+        >
+
+            <div class="indicador-titulo">
+
+                VENCIDOS
+
+            </div>
+
+
+            <div
+                id="indicadorVencidos"
+                class="indicador-numero"
+            >
+
+                0
+
+            </div>
+
+        </div>
+
+
+
+        <!-- INATIVOS -->
+
+        <div
+            class="indicador-card indicador-inativos"
+        >
+
+            <div class="indicador-titulo">
+
+                INATIVOS
+
+            </div>
+
+
+            <div
+                id="indicadorInativos"
+                class="indicador-numero"
+            >
+
+                0
+
+            </div>
+
+        </div>
+
+
+    </section>
+
 
 
     <!-- ======================================
@@ -61,16 +302,21 @@
 
     <section class="admin-card">
 
+
         <h2>
             ➕ Criar novo usuário
         </h2>
 
+
         <p class="section-description">
+
             Crie um acesso para seu cliente.
+
         </p>
 
 
         <form id="usuarioForm">
+
 
             <div class="grid-form">
 
@@ -78,8 +324,11 @@
                 <div class="form-group">
 
                     <label for="nome">
+
                         Nome do cliente
+
                     </label>
+
 
                     <input
                         type="text"
@@ -91,11 +340,15 @@
                 </div>
 
 
+
                 <div class="form-group">
 
                     <label for="novoUsuario">
+
                         Usuário
+
                     </label>
+
 
                     <input
                         type="text"
@@ -107,11 +360,15 @@
                 </div>
 
 
+
                 <div class="form-group">
 
                     <label for="novaSenha">
+
                         Senha
+
                     </label>
+
 
                     <input
                         type="password"
@@ -123,11 +380,15 @@
                 </div>
 
 
+
                 <div class="form-group">
 
                     <label for="validade">
+
                         Data de validade
+
                     </label>
+
 
                     <input
                         type="date"
@@ -141,12 +402,16 @@
             </div>
 
 
+
             <button
                 type="submit"
                 class="btn-primary"
             >
+
                 CRIAR USUÁRIO
+
             </button>
+
 
 
             <div
@@ -154,9 +419,12 @@
                 class="mensagem"
             ></div>
 
+
         </form>
 
+
     </section>
+
 
 
     <!-- ======================================
@@ -165,73 +433,110 @@
 
     <section class="admin-card">
 
+
         <div class="section-title-row">
+
 
             <div>
 
                 <h2>
+
                     👥 Usuários cadastrados
+
                 </h2>
 
+
                 <p class="section-description">
+
                     Gerencie os acessos dos seus clientes.
+
                 </p>
 
             </div>
+
 
 
             <div
                 id="contadorUsuarios"
                 class="contador"
             >
+
                 0 usuários
+
             </div>
+
 
         </div>
 
 
+
         <div class="table-container">
+
 
             <table>
 
+
                 <thead>
+
 
                     <tr>
 
+
                         <th>
+
                             Nome
+
                         </th>
 
+
                         <th>
+
                             Usuário
+
                         </th>
 
+
                         <th>
+
                             Validade
+
                         </th>
 
+
                         <th>
+
                             Status
+
                         </th>
 
+
                         <th>
+
                             Ações
+
                         </th>
+
 
                     </tr>
 
+
                 </thead>
+
 
 
                 <tbody id="listaUsuarios">
 
                 </tbody>
 
+
             </table>
+
 
         </div>
 
+
     </section>
+
 
 
     <!-- ======================================
@@ -240,15 +545,22 @@
 
     <section class="info-box">
 
+
         <strong>
+
             🔐 Sistema conectado ao Supabase
+
         </strong>
 
+
         <p>
+
             Os usuários cadastrados são armazenados
             no banco de dados online e podem ser
             administrados pelo painel.
+
         </p>
+
 
     </section>
 
@@ -256,12 +568,9 @@
 </div>
 
 
+
 <!-- ==========================================
      SUPABASE
-     
-     IMPORTANTE:
-     A biblioteca precisa carregar ANTES
-     do login.js.
 =========================================== -->
 
 <script
@@ -269,11 +578,13 @@
 ></script>
 
 
+
 <!-- ==========================================
      LOGIN / SESSÃO
 =========================================== -->
 
 <script src="login.js"></script>
+
 
 
 <!-- ==========================================

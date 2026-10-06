@@ -16,7 +16,8 @@ protegerAdmin();
    SUPABASE
 ========================================== */
 
-const adminSupabase = supabaseClient;
+const adminSupabase =
+    supabaseClient;
 
 
 /* ==========================================
@@ -24,31 +25,70 @@ const adminSupabase = supabaseClient;
 ========================================== */
 
 const usuarioForm =
-    document.getElementById("usuarioForm");
+    document.getElementById(
+        "usuarioForm"
+    );
 
 
 const listaUsuarios =
-    document.getElementById("listaUsuarios");
+    document.getElementById(
+        "listaUsuarios"
+    );
 
 
 const contadorUsuarios =
-    document.getElementById("contadorUsuarios");
+    document.getElementById(
+        "contadorUsuarios"
+    );
 
 
 const adminMensagem =
-    document.getElementById("adminMensagem");
+    document.getElementById(
+        "adminMensagem"
+    );
 
+
+/* ==========================================
+   INDICADORES
+========================================== */
+
+const indicadorTotal =
+    document.getElementById(
+        "indicadorTotal"
+    );
+
+
+const indicadorAtivos =
+    document.getElementById(
+        "indicadorAtivos"
+    );
+
+
+const indicadorVencidos =
+    document.getElementById(
+        "indicadorVencidos"
+    );
+
+
+const indicadorInativos =
+    document.getElementById(
+        "indicadorInativos"
+    );
 
 
 /* ==========================================
    MENSAGEM
 ========================================== */
 
-function mostrarMensagem(texto, tipo){
-
+function mostrarMensagem(
+    texto,
+    tipo
+){
 
     if(!adminMensagem){
+
         return;
+
     }
 
 
@@ -62,7 +102,6 @@ function mostrarMensagem(texto, tipo){
 
     setTimeout(()=>{
 
-
         adminMensagem.textContent =
             "";
 
@@ -70,23 +109,23 @@ function mostrarMensagem(texto, tipo){
         adminMensagem.className =
             "mensagem";
 
-
     },4000);
 
-
 }
-
 
 
 /* ==========================================
    ESCAPAR HTML
 ========================================== */
 
-function escaparHTML(texto){
-
+function escaparHTML(
+    texto
+){
 
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     div.textContent =
@@ -98,16 +137,18 @@ function escaparHTML(texto){
 }
 
 
-
 /* ==========================================
    FORMATAR DATA
 ========================================== */
 
-function formatarData(data){
-
+function formatarData(
+    data
+){
 
     if(!data){
+
         return "-";
+
     }
 
 
@@ -115,8 +156,12 @@ function formatarData(data){
         data.split("-");
 
 
-    if(partes.length !== 3){
+    if(
+        partes.length !== 3
+    ){
+
         return data;
+
     }
 
 
@@ -125,16 +170,18 @@ function formatarData(data){
 }
 
 
-
 /* ==========================================
    VERIFICAR VALIDADE
 ========================================== */
 
-function verificarValidade(usuario){
-
+function verificarValidade(
+    usuario
+){
 
     if(!usuario.validade){
+
         return false;
+
     }
 
 
@@ -142,12 +189,18 @@ function verificarValidade(usuario){
         new Date();
 
 
-    hoje.setHours(0,0,0,0);
+    hoje.setHours(
+        0,
+        0,
+        0,
+        0
+    );
 
 
     const validade =
         new Date(
-            usuario.validade + "T23:59:59"
+            usuario.validade +
+            "T23:59:59"
         );
 
 
@@ -156,28 +209,25 @@ function verificarValidade(usuario){
 }
 
 
-
 /* ==========================================
    BUSCAR USUÁRIOS
 ========================================== */
 
 async function obterUsuarios(){
 
-
     const resultado =
         await adminSupabase
-        .from("usuarios")
-        .select("*")
-        .order(
-            "nome",
-            {
-                ascending:true
-            }
-        );
+            .from("usuarios")
+            .select("*")
+            .order(
+                "nome",
+                {
+                    ascending:true
+                }
+            );
 
 
     if(resultado.error){
-
 
         console.error(
             resultado.error
@@ -198,19 +248,121 @@ async function obterUsuarios(){
     return resultado.data || [];
 
 }
+
+
+/* ==========================================
+   ATUALIZAR INDICADORES
+========================================== */
+
+function atualizarIndicadores(
+    usuarios
+){
+
+    const total =
+        usuarios.length;
+
+
+    let ativos = 0;
+
+    let vencidos = 0;
+
+    let inativos = 0;
+
+
+    usuarios.forEach(
+        (usuario)=>{
+
+
+            const expirado =
+                !verificarValidade(
+                    usuario
+                );
+
+
+            /*
+               INATIVO tem prioridade
+               sobre VENCIDO, igual ao
+               status mostrado na tabela.
+            */
+
+            if(usuario.ativo === false){
+
+                inativos++;
+
+            }
+
+            else if(expirado){
+
+                vencidos++;
+
+            }
+
+            else{
+
+                ativos++;
+
+            }
+
+        }
+    );
+
+
+    if(indicadorTotal){
+
+        indicadorTotal.textContent =
+            total;
+
+    }
+
+
+    if(indicadorAtivos){
+
+        indicadorAtivos.textContent =
+            ativos;
+
+    }
+
+
+    if(indicadorVencidos){
+
+        indicadorVencidos.textContent =
+            vencidos;
+
+    }
+
+
+    if(indicadorInativos){
+
+        indicadorInativos.textContent =
+            inativos;
+
+    }
+
+}
+
+
 /* ==========================================
    RENDERIZAR USUÁRIOS
 ========================================== */
 
 async function renderizarUsuarios(){
 
-
     listaUsuarios.innerHTML = `
 
         <tr>
-            <td colspan="5" style="text-align:center;padding:30px;">
+
+            <td
+                colspan="5"
+                style="
+                    text-align:center;
+                    padding:30px;
+                "
+            >
+
                 Carregando usuários...
+
             </td>
+
         </tr>
 
     `;
@@ -220,23 +372,47 @@ async function renderizarUsuarios(){
         await obterUsuarios();
 
 
+    /* ======================================
+       ATUALIZAR INDICADORES
+    ====================================== */
+
+    atualizarIndicadores(
+        usuarios
+    );
+
+
+    /* ======================================
+       CONTADOR DA TABELA
+    ====================================== */
 
     contadorUsuarios.textContent =
         usuarios.length === 1
-        ? "1 usuário"
-        : `${usuarios.length} usuários`;
+            ? "1 usuário"
+            : `${usuarios.length} usuários`;
 
 
+    /* ======================================
+       NENHUM USUÁRIO
+    ====================================== */
 
-    if(usuarios.length === 0){
-
+    if(
+        usuarios.length === 0
+    ){
 
         listaUsuarios.innerHTML = `
 
             <tr>
 
-                <td colspan="5" style="text-align:center;padding:30px;">
+                <td
+                    colspan="5"
+                    style="
+                        text-align:center;
+                        padding:30px;
+                    "
+                >
+
                     Nenhum usuário cadastrado.
+
                 </td>
 
             </tr>
@@ -249,173 +425,220 @@ async function renderizarUsuarios(){
     }
 
 
-
     listaUsuarios.innerHTML = "";
 
 
+    /* ======================================
+       CRIAR LINHAS
+    ====================================== */
 
-    usuarios.forEach((usuario)=>{
-
-
-        const expirado =
-            !verificarValidade(usuario);
-
-
-
-        let classeStatus;
-        let textoStatus;
+    usuarios.forEach(
+        (usuario)=>{
 
 
-
-        if(usuario.ativo === false){
-
-
-            classeStatus =
-                "status-inativo";
+            const expirado =
+                !verificarValidade(
+                    usuario
+                );
 
 
-            textoStatus =
-                "INATIVO";
+            let classeStatus;
+
+            let textoStatus;
 
 
-        }else if(expirado){
+            /* ==================================
+               STATUS
+            ================================== */
+
+            if(
+                usuario.ativo === false
+            ){
+
+                classeStatus =
+                    "status-inativo";
 
 
-            classeStatus =
-                "status-expirado";
+                textoStatus =
+                    "INATIVO";
+
+            }
+
+            else if(
+                expirado
+            ){
+
+                classeStatus =
+                    "status-expirado";
 
 
-            textoStatus =
-                "EXPIRADO";
+                textoStatus =
+                    "EXPIRADO";
+
+            }
+
+            else{
+
+                classeStatus =
+                    "status-ativo";
 
 
-        }else{
+                textoStatus =
+                    "ATIVO";
+
+            }
 
 
-            classeStatus =
-                "status-ativo";
+            /* ==================================
+               LINHA
+            ================================== */
+
+            const linha =
+                document.createElement(
+                    "tr"
+                );
 
 
-            textoStatus =
-                "ATIVO";
+            linha.innerHTML = `
+
+                <td>
+
+                    ${escaparHTML(
+                        usuario.nome
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    ${escaparHTML(
+                        usuario.usuario
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    ${formatarData(
+                        usuario.validade
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="
+                            status
+                            ${classeStatus}
+                        "
+                    >
+
+                        ${textoStatus}
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+
+                    <button
+                        class="
+                            btn-action
+                            ${
+                                usuario.ativo
+                                ? "btn-deactivate"
+                                : "btn-activate"
+                            }
+                        "
+                        data-acao="alternar"
+                        data-id="${usuario.id}"
+                    >
+
+                        ${
+                            usuario.ativo
+                            ? "Desativar"
+                            : "Ativar"
+                        }
+
+                    </button>
+
+
+
+                    <button
+                        class="
+                            btn-action
+                            btn-edit
+                        "
+                        data-acao="validade"
+                        data-id="${usuario.id}"
+                    >
+
+                        📅 Editar validade
+
+                    </button>
+
+
+
+                    <button
+                        class="
+                            btn-action
+                            btn-delete
+                        "
+                        data-acao="excluir"
+                        data-id="${usuario.id}"
+                    >
+
+                        Excluir
+
+                    </button>
+
+
+                </td>
+
+            `;
+
+
+            listaUsuarios.appendChild(
+                linha
+            );
 
         }
-
-
-
-        const linha =
-            document.createElement("tr");
-
-
-
-        linha.innerHTML = `
-
-            <td>
-                ${escaparHTML(usuario.nome)}
-            </td>
-
-
-            <td>
-                ${escaparHTML(usuario.usuario)}
-            </td>
-
-
-            <td>
-                ${formatarData(usuario.validade)}
-            </td>
-
-
-            <td>
-
-                <span class="status ${classeStatus}">
-                    ${textoStatus}
-                </span>
-
-            </td>
-
-
-            <td>
-
-
-                <button
-                    class="btn-action ${
-                        usuario.ativo
-                        ? "btn-deactivate"
-                        : "btn-activate"
-                    }"
-                    data-acao="alternar"
-                    data-id="${usuario.id}"
-                >
-
-                    ${
-                        usuario.ativo
-                        ? "Desativar"
-                        : "Ativar"
-                    }
-
-                </button>
-
-
-
-                <button
-                    class="btn-action btn-edit"
-                    data-acao="validade"
-                    data-id="${usuario.id}"
-                >
-
-                    📅 Editar validade
-
-                </button>
-
-
-
-                <button
-                    class="btn-action btn-delete"
-                    data-acao="excluir"
-                    data-id="${usuario.id}"
-                >
-
-                    Excluir
-
-                </button>
-
-
-            </td>
-
-
-        `;
-
-
-
-        listaUsuarios.appendChild(linha);
-
-
-    });
-
+    );
 
 }
-
-
 
 
 /* ==========================================
    ALTERAR STATUS
 ========================================== */
 
-async function alternarUsuario(id){
-
+async function alternarUsuario(
+    id
+){
 
     const busca =
         await adminSupabase
-        .from("usuarios")
-        .select("id,nome,ativo")
-        .eq("id",id)
-        .maybeSingle();
+            .from("usuarios")
+            .select(
+                "id,nome,ativo"
+            )
+            .eq(
+                "id",
+                id
+            )
+            .maybeSingle();
 
 
-
-    if(busca.error || !busca.data){
-
+    if(
+        busca.error ||
+        !busca.data
+    ){
 
         mostrarMensagem(
             "Usuário não encontrado.",
@@ -428,32 +651,28 @@ async function alternarUsuario(id){
     }
 
 
-
     const novoStatus =
         busca.data.ativo === true
-        ? false
-        : true;
-
+            ? false
+            : true;
 
 
     const atualizacao =
         await adminSupabase
-        .from("usuarios")
-        .update({
+            .from("usuarios")
+            .update({
 
-            ativo:
-                novoStatus
+                ativo:
+                    novoStatus
 
-        })
-        .eq(
-            "id",
-            id
-        );
-
+            })
+            .eq(
+                "id",
+                id
+            );
 
 
     if(atualizacao.error){
-
 
         console.error(
             atualizacao.error
@@ -471,41 +690,47 @@ async function alternarUsuario(id){
     }
 
 
-
     mostrarMensagem(
 
         novoStatus
-        ? "Usuário ativado!"
-        : "Usuário desativado!",
+            ? "Usuário ativado!"
+            : "Usuário desativado!",
 
         "sucesso"
 
     );
 
 
-
     await renderizarUsuarios();
 
-
 }
+
+
 /* ==========================================
    EDITAR VALIDADE
 ========================================== */
 
-async function editarValidade(id){
-
+async function editarValidade(
+    id
+){
 
     const busca =
         await adminSupabase
-        .from("usuarios")
-        .select("id,nome,validade")
-        .eq("id",id)
-        .maybeSingle();
+            .from("usuarios")
+            .select(
+                "id,nome,validade"
+            )
+            .eq(
+                "id",
+                id
+            )
+            .maybeSingle();
 
 
-
-    if(busca.error || !busca.data){
-
+    if(
+        busca.error ||
+        !busca.data
+    ){
 
         mostrarMensagem(
             "Usuário não encontrado.",
@@ -518,7 +743,6 @@ async function editarValidade(id){
     }
 
 
-
     const novaValidade =
         prompt(
 
@@ -529,7 +753,6 @@ async function editarValidade(id){
         );
 
 
-
     if(!novaValidade){
 
         return;
@@ -537,28 +760,25 @@ async function editarValidade(id){
     }
 
 
-
     const atualizacao =
         await adminSupabase
-        .from("usuarios")
-        .update({
+            .from("usuarios")
+            .update({
 
-            validade:
-                novaValidade,
+                validade:
+                    novaValidade,
 
-            ativo:
-                true
+                ativo:
+                    true
 
-        })
-        .eq(
-            "id",
-            id
-        );
-
+            })
+            .eq(
+                "id",
+                id
+            );
 
 
     if(atualizacao.error){
-
 
         console.error(
             atualizacao.error
@@ -576,7 +796,6 @@ async function editarValidade(id){
     }
 
 
-
     mostrarMensagem(
         "Validade atualizada!",
         "sucesso"
@@ -585,24 +804,21 @@ async function editarValidade(id){
 
     await renderizarUsuarios();
 
-
 }
-
-
 
 
 /* ==========================================
    EXCLUIR USUÁRIO
 ========================================== */
 
-async function excluirUsuario(id){
-
+async function excluirUsuario(
+    id
+){
 
     const confirmar =
         confirm(
             "Deseja excluir este usuário?"
         );
-
 
 
     if(!confirmar){
@@ -612,20 +828,17 @@ async function excluirUsuario(id){
     }
 
 
-
     const resultado =
         await adminSupabase
-        .from("usuarios")
-        .delete()
-        .eq(
-            "id",
-            id
-        );
-
+            .from("usuarios")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
 
 
     if(resultado.error){
-
 
         console.error(
             resultado.error
@@ -643,7 +856,6 @@ async function excluirUsuario(id){
     }
 
 
-
     mostrarMensagem(
         "Usuário excluído!",
         "sucesso"
@@ -652,10 +864,7 @@ async function excluirUsuario(id){
 
     await renderizarUsuarios();
 
-
 }
-
-
 
 
 /* ==========================================
@@ -668,8 +877,9 @@ listaUsuarios.addEventListener(
 
 
         const botao =
-            event.target.closest("button");
-
+            event.target.closest(
+                "button"
+            );
 
 
         if(!botao){
@@ -677,7 +887,6 @@ listaUsuarios.addEventListener(
             return;
 
         }
-
 
 
         const id =
@@ -688,62 +897,75 @@ listaUsuarios.addEventListener(
             botao.dataset.acao;
 
 
+        if(
+            acao === "alternar"
+        ){
 
-        if(acao === "alternar"){
-
-            await alternarUsuario(id);
-
-        }
-
-
-
-        if(acao === "validade"){
-
-            await editarValidade(id);
+            await alternarUsuario(
+                id
+            );
 
         }
 
 
+        if(
+            acao === "validade"
+        ){
 
-        if(acao === "excluir"){
-
-            await excluirUsuario(id);
+            await editarValidade(
+                id
+            );
 
         }
 
+
+        if(
+            acao === "excluir"
+        ){
+
+            await excluirUsuario(
+                id
+            );
+
+        }
 
     }
 );
-
-
 
 
 /* ==========================================
    CRIAR USUÁRIO
 ========================================== */
 
-async function criarUsuario(event){
-
+async function criarUsuario(
+    event
+){
 
     event.preventDefault();
 
 
-
     const nome =
-        document.getElementById("nome").value.trim();
+        document.getElementById(
+            "nome"
+        ).value.trim();
 
 
     const usuario =
-        document.getElementById("novoUsuario").value.trim();
+        document.getElementById(
+            "novoUsuario"
+        ).value.trim();
 
 
     const senha =
-        document.getElementById("novaSenha").value;
+        document.getElementById(
+            "novaSenha"
+        ).value;
 
 
     const validade =
-        document.getElementById("validade").value;
-
+        document.getElementById(
+            "validade"
+        ).value;
 
 
     if(
@@ -752,7 +974,6 @@ async function criarUsuario(event){
         !senha ||
         !validade
     ){
-
 
         mostrarMensagem(
             "Preencha todos os campos.",
@@ -765,25 +986,21 @@ async function criarUsuario(event){
     }
 
 
-
     const email =
         usuario.toLowerCase() +
         "@calculafacil.local";
 
 
-
     const sessao =
-        await adminSupabase.auth.getSession();
-
+        await adminSupabase.auth
+            .getSession();
 
 
     const token =
         sessao.data.session?.access_token;
 
 
-
     if(!token){
-
 
         mostrarMensagem(
             "Sessão expirada.",
@@ -794,7 +1011,6 @@ async function criarUsuario(event){
         return;
 
     }
-
 
 
     try{
@@ -812,7 +1028,8 @@ async function criarUsuario(event){
                     headers:{
 
                         "Authorization":
-                            "Bearer " + token,
+                            "Bearer " +
+                            token,
 
                         "apikey":
                             SUPABASE_ANON_KEY,
@@ -838,16 +1055,15 @@ async function criarUsuario(event){
             );
 
 
-
         const retorno =
             await resposta.json();
 
 
-
         if(!resposta.ok){
 
-
-            console.error(retorno);
+            console.error(
+                retorno
+            );
 
 
             mostrarMensagem(
@@ -862,23 +1078,20 @@ async function criarUsuario(event){
         }
 
 
-
         mostrarMensagem(
             "Usuário criado com sucesso!",
             "sucesso"
         );
 
 
-
         usuarioForm.reset();
-
 
 
         await renderizarUsuarios();
 
 
-
-    }catch(erro){
+    }
+    catch(erro){
 
 
         console.error(
@@ -893,11 +1106,17 @@ async function criarUsuario(event){
 
     }
 
-
 }
 
 
+/* ==========================================
+   ATIVAR FORMULÁRIO
+========================================== */
 
+usuarioForm.addEventListener(
+    "submit",
+    criarUsuario
+);
 
 
 /* ==========================================
