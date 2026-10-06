@@ -11,1319 +11,1674 @@
 protegerCliente();
 
 
-
 /* ==========================================
    SUPABASE
 ========================================== */
 
 const PRODUTOS_SUPABASE_URL =
-"https://ggfgtyimojehbagpcgeh.supabase.co";
+    "https://ggfgtyimojehbagpcgeh.supabase.co";
 
 
 const PRODUTOS_SUPABASE_ANON_KEY =
-"sb_publishable_rXqWNIrp8Tx9qPBhveoEGA_WPD6pGxi";
+    "sb_publishable_rXqWNIrp8Tx9qPBhveoEGA_WPD6pGxi";
 
 
 const produtosSupabase =
-window.supabase.createClient(
-    PRODUTOS_SUPABASE_URL,
-    PRODUTOS_SUPABASE_ANON_KEY
-);
-
+    window.supabase.createClient(
+        PRODUTOS_SUPABASE_URL,
+        PRODUTOS_SUPABASE_ANON_KEY
+    );
 
 
 /* ==========================================
    VARIÁVEIS
 ========================================== */
 
-
 let produtoEditandoId = null;
 
 let todosProdutos = [];
-
 
 
 /* ==========================================
    ELEMENTOS
 ========================================== */
 
-
 const formProduto =
-document.getElementById("formProduto");
+    document.getElementById("formProduto");
 
 
 const formTitulo =
-document.getElementById("formTitulo");
+    document.getElementById("formTitulo");
 
 
 const produtoNome =
-document.getElementById("produtoNome");
+    document.getElementById("produtoNome");
 
 
 const produtoSku =
-document.getElementById("produtoSku");
+    document.getElementById("produtoSku");
 
 
 const produtoCategoria =
-document.getElementById("produtoCategoria");
+    document.getElementById("produtoCategoria");
+
+
+const produtoPB =
+    document.getElementById("produtoPB");
+
+
+const produtoDescontoCusto =
+    document.getElementById("produtoDescontoCusto");
 
 
 const produtoCusto =
-document.getElementById("produtoCusto");
+    document.getElementById("produtoCusto");
 
 
 const produtoLucro =
-document.getElementById("produtoLucro");
+    document.getElementById("produtoLucro");
 
 
 const produtoTaxa =
-document.getElementById("produtoTaxa");
+    document.getElementById("produtoTaxa");
 
 
 const produtoDesconto =
-document.getElementById("produtoDesconto");
+    document.getElementById("produtoDesconto");
 
 
 const produtoImposto =
-document.getElementById("produtoImposto");
+    document.getElementById("produtoImposto");
 
 
 const produtoMensagem =
-document.getElementById("produtoMensagem");
+    document.getElementById("produtoMensagem");
 
 
 const listaProdutos =
-document.getElementById("listaProdutos");
+    document.getElementById("listaProdutos");
 
 
 const buscarProduto =
-document.getElementById("buscarProduto");
-
-
-
+    document.getElementById("buscarProduto");
 
 
 /* ==========================================
    FORMATAÇÃO
 ========================================== */
 
-
 function formatarMoeda(valor){
 
-return Number(valor || 0).toLocaleString(
-"pt-BR",
-{
-style:"currency",
-currency:"BRL"
-}
-);
+    return Number(valor || 0).toLocaleString(
+        "pt-BR",
+        {
+            style:"currency",
+            currency:"BRL"
+        }
+    );
 
 }
 
 
+/* ==========================================
+   ESCAPAR HTML
+========================================== */
 
 function escaparHTML(texto){
 
-return String(texto ?? "")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+    return String(texto ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
 
+/* ==========================================
+   LER NÚMERO
+========================================== */
+
+function lerNumero(campo){
+
+    const valor =
+        String(campo.value || "")
+            .trim()
+            .replace(",", ".");
+
+
+    if(valor === ""){
+
+        return NaN;
+
+    }
+
+
+    return Number(valor);
+
+}
 
 
 /* ==========================================
    MENSAGEM
 ========================================== */
 
-
 function mostrarMensagem(texto,tipo=""){
 
+    produtoMensagem.className =
+        "produto-mensagem " + tipo;
 
-produtoMensagem.className =
-"produto-mensagem " + tipo;
-
-
-produtoMensagem.textContent =
-texto;
-
+    produtoMensagem.textContent =
+        texto;
 
 }
-
-
 
 
 /* ==========================================
    USUÁRIO
 ========================================== */
 
-
 async function obterUsuarioAuth(){
 
-
-const {
-data,
-error
-}
-=
-await produtosSupabase.auth.getUser();
+    const {
+        data,
+        error
+    } =
+        await produtosSupabase.auth.getUser();
 
 
+    if(error){
 
-if(error){
+        console.error(
+            "Erro ao obter usuário:",
+            error
+        );
 
-console.error(error);
+        return null;
 
-return null;
-
-}
+    }
 
 
-
-return data.user || null;
-
+    return data.user || null;
 
 }
-
-
-
 
 
 /* ==========================================
-   CALCULO
+   CALCULAR PREÇO DE CUSTO
 ========================================== */
 
+function calcularPrecoCustoProduto(){
+
+    const PB =
+        lerNumero(produtoPB);
+
+
+    const D =
+        lerNumero(produtoDescontoCusto);
+
+
+    /* ======================================
+       CAMPOS VAZIOS
+    ====================================== */
+
+    if(
+        !Number.isFinite(PB) ||
+        !Number.isFinite(D)
+    ){
+
+        produtoCusto.value = "";
+
+        return {
+
+            erro:null,
+
+            pb:PB,
+
+            descontoCusto:D,
+
+            pc:null
+
+        };
+
+    }
+
+
+    /* ======================================
+       VALIDAR PREÇO BRUTO
+    ====================================== */
+
+    if(PB < 0){
+
+        produtoCusto.value = "";
+
+        return {
+
+            erro:
+                "O preço bruto não pode ser negativo.",
+
+            pb:PB,
+
+            descontoCusto:D,
+
+            pc:null
+
+        };
+
+    }
+
+
+    /* ======================================
+       VALIDAR DESCONTO
+    ====================================== */
+
+    if(
+        D < 0 ||
+        D >= 100
+    ){
+
+        produtoCusto.value = "";
+
+        return {
+
+            erro:
+                "O desconto deve estar entre 0% e 99,99%.",
+
+            pb:PB,
+
+            descontoCusto:D,
+
+            pc:null
+
+        };
+
+    }
+
+
+    /* ======================================
+       CÁLCULO
+
+       PC = PB × (1 - D / 100)
+    ====================================== */
+
+    const PC =
+        PB * (1 - D / 100);
+
+
+    /* ======================================
+       MOSTRAR PC
+    ====================================== */
+
+    produtoCusto.value =
+        PC.toFixed(6);
+
+
+    return {
+
+        erro:null,
+
+        pb:PB,
+
+        descontoCusto:D,
+
+        pc:PC
+
+    };
+
+}
+
+
+/* ==========================================
+   ATUALIZAR PC NA TELA
+========================================== */
+
+function atualizarPrecoCustoProduto(){
+
+    calcularPrecoCustoProduto();
+
+}
+
+
+/* ==========================================
+   CALCULAR VALORES DO PRODUTO
+========================================== */
 
 function calcularValoresProduto(){
 
-
-const PC =
-Number(produtoCusto.value);
-
-
-const L =
-Number(produtoLucro.value);
+    const precoCusto =
+        calcularPrecoCustoProduto();
 
 
-const TF =
-Number(produtoTaxa.value);
+    if(
+        precoCusto.erro
+    ){
+
+        return precoCusto;
+
+    }
 
 
-const PD =
-Number(produtoDesconto.value);
+    if(
+        precoCusto.pc === null
+    ){
+
+        return {
+
+            erro:
+                "Informe o preço bruto e o desconto."
+
+        };
+
+    }
 
 
-const I =
-Number(produtoImposto.value);
+    const L =
+        lerNumero(produtoLucro);
 
 
-
-if(
-!Number.isFinite(PC) ||
-!Number.isFinite(L) ||
-!Number.isFinite(TF) ||
-!Number.isFinite(PD) ||
-!Number.isFinite(I)
-){
+    const TF =
+        lerNumero(produtoTaxa);
 
 
-return {
-erro:"Preencha todos os campos."
-};
+    const PD =
+        lerNumero(produtoDesconto);
 
+
+    const I =
+        lerNumero(produtoImposto);
+
+
+    /* ======================================
+       CAMPOS VAZIOS
+    ====================================== */
+
+    if(
+        !Number.isFinite(L) ||
+        !Number.isFinite(TF) ||
+        !Number.isFinite(PD) ||
+        !Number.isFinite(I)
+    ){
+
+        return {
+
+            erro:
+                "Preencha todos os campos.",
+
+            pb:
+                precoCusto.pb,
+
+            descontoCusto:
+                precoCusto.descontoCusto,
+
+            pc:
+                precoCusto.pc
+
+        };
+
+    }
+
+
+    /* ======================================
+       VALIDAR LUCRO
+    ====================================== */
+
+    if(L < 0){
+
+        return {
+
+            erro:
+                "O lucro não pode ser negativo."
+
+        };
+
+    }
+
+
+    /* ======================================
+       VALIDAR TAXA
+    ====================================== */
+
+    if(TF < 0){
+
+        return {
+
+            erro:
+                "A taxa fixa não pode ser negativa."
+
+        };
+
+    }
+
+
+    /* ======================================
+       VALIDAR PD
+    ====================================== */
+
+    if(
+        PD < 0 ||
+        PD >= 100
+    ){
+
+        return {
+
+            erro:
+                "O desconto da venda deve estar entre 0% e 99,99%."
+
+        };
+
+    }
+
+
+    /* ======================================
+       VALIDAR IMPOSTO
+    ====================================== */
+
+    if(
+        I < 0 ||
+        I >= 100
+    ){
+
+        return {
+
+            erro:
+                "O imposto deve estar entre 0% e 99,99%."
+
+        };
+
+    }
+
+
+    /* ======================================
+       PC
+    ====================================== */
+
+    const PC =
+        precoCusto.pc;
+
+
+    /* ======================================
+       LUCRO SOBRE PC
+    ====================================== */
+
+    const lucroPC =
+        PC * (L / 100);
+
+
+    /* ======================================
+       NUMERADOR
+    ====================================== */
+
+    const numerador =
+        PC +
+        lucroPC +
+        TF;
+
+
+    /* ======================================
+       DENOMINADOR
+    ====================================== */
+
+    const divisor =
+        100 -
+        PD -
+        I;
+
+
+    /* ======================================
+       VALIDAR DIVISOR
+    ====================================== */
+
+    if(divisor <= 0){
+
+        return {
+
+            erro:
+                "Desconto e imposto inválidos."
+
+        };
+
+    }
+
+
+    /* ======================================
+       PREÇO DE VENDA
+    ====================================== */
+
+    const precoVenda =
+        numerador /
+        (divisor / 100);
+
+
+    /* ======================================
+       DESCONTO DA VENDA
+    ====================================== */
+
+    const desconto =
+        precoVenda *
+        (PD / 100);
+
+
+    /* ======================================
+       IMPOSTO
+    ====================================== */
+
+    const imposto =
+        precoVenda *
+        (I / 100);
+
+
+    /* ======================================
+       LUCRO LÍQUIDO
+    ====================================== */
+
+    const lucroLiquido =
+        precoVenda -
+        PC -
+        TF -
+        desconto -
+        imposto;
+
+
+    return {
+
+        erro:null,
+
+        pb:
+            precoCusto.pb,
+
+        descontoCusto:
+            precoCusto.descontoCusto,
+
+        pc:
+            PC,
+
+        precoVenda:
+            precoVenda,
+
+        lucroLiquido:
+            lucroLiquido
+
+    };
 
 }
 
 
-
-const lucroPC =
-PC * (L / 100);
-
-
-
-const numerador =
-PC + lucroPC + TF;
-
-
-
-const divisor =
-100 - PD - I;
-
-
-
-if(divisor <= 0){
-
-return {
-erro:"Desconto e imposto inválidos."
-};
-
-}
-
-
-
-const precoVenda =
-numerador / (divisor / 100);
-
-
-
-const desconto =
-precoVenda * (PD/100);
-
-
-
-const imposto =
-precoVenda * (I/100);
-
-
-
-const lucroLiquido =
-precoVenda -
-PC -
-TF -
-desconto -
-imposto;
-
-
-
-return {
-
-precoVenda,
-
-lucroLiquido
-
-};
-
-
-}
 /* ==========================================
    NOVO PRODUTO
 ========================================== */
 
-
 function novoProduto(){
 
-
-produtoEditandoId = null;
-
-
-formTitulo.textContent =
-"Cadastrar Produto";
+    produtoEditandoId = null;
 
 
-limparFormulario();
+    formTitulo.textContent =
+        "Cadastrar Produto";
 
 
-mostrarMensagem("");
+    limparFormulario();
 
 
-
-formProduto.classList.add(
-"ativo"
-);
+    mostrarMensagem("");
 
 
+    formProduto.classList.add(
+        "ativo"
+    );
 
-produtoNome.focus();
 
+    produtoNome.focus();
 
 }
-
-
 
 
 /* ==========================================
-   LIMPAR
+   LIMPAR FORMULÁRIO
 ========================================== */
-
 
 function limparFormulario(){
 
+    produtoNome.value = "";
 
-produtoNome.value = "";
+    produtoSku.value = "";
 
-produtoSku.value = "";
+    produtoCategoria.value = "";
 
-produtoCategoria.value = "";
+    produtoPB.value = "";
 
-produtoCusto.value = "";
+    produtoDescontoCusto.value = "";
 
-produtoLucro.value = "";
+    produtoCusto.value = "";
 
-produtoTaxa.value = "";
+    produtoLucro.value = "";
 
-produtoDesconto.value = "";
+    produtoTaxa.value = "";
 
-produtoImposto.value = "";
+    produtoDesconto.value = "";
 
+    produtoImposto.value = "";
 
 }
-
-
 
 
 /* ==========================================
    CANCELAR
 ========================================== */
 
-
 function cancelarProduto(){
 
-
-produtoEditandoId = null;
-
-
-limparFormulario();
+    produtoEditandoId = null;
 
 
-formProduto.classList.remove(
-"ativo"
-);
+    limparFormulario();
 
 
-mostrarMensagem("");
+    formProduto.classList.remove(
+        "ativo"
+    );
 
 
+    mostrarMensagem("");
 
 }
-
-
 
 
 /* ==========================================
-   SALVAR
+   SALVAR PRODUTO
 ========================================== */
-
 
 async function salvarProduto(){
 
-
-const nome =
-produtoNome.value.trim();
-
+    const nome =
+        produtoNome.value.trim();
 
 
-if(!nome){
+    if(!nome){
+
+        mostrarMensagem(
+            "Informe o nome do produto.",
+            "erro"
+        );
+
+        return;
+
+    }
 
 
-mostrarMensagem(
-"Informe o nome do produto.",
-"erro"
-);
+    const usuario =
+        await obterUsuarioAuth();
 
 
-return;
+    if(!usuario){
+
+        mostrarMensagem(
+            "Sessão expirada.",
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    const calculo =
+        calcularValoresProduto();
+
+
+    if(calculo.erro){
+
+        mostrarMensagem(
+            calculo.erro,
+            "erro"
+        );
+
+        return;
+
+    }
+
+
+    const dados = {
+
+        usuario_id:
+            usuario.id,
+
+
+        nome:
+            nome,
+
+
+        sku:
+            produtoSku.value.trim() || null,
+
+
+        categoria:
+            produtoCategoria.value.trim() || null,
+
+
+        preco_bruto:
+            Number(
+                calculo.pb
+            ),
+
+
+        desconto_custo_percentual:
+            Number(
+                calculo.descontoCusto
+            ),
+
+
+        preco_custo:
+            Number(
+                calculo.pc
+            ),
+
+
+        lucro_percentual:
+            lerNumero(
+                produtoLucro
+            ),
+
+
+        taxa_fixa:
+            lerNumero(
+                produtoTaxa
+            ),
+
+
+        desconto_percentual:
+            lerNumero(
+                produtoDesconto
+            ),
+
+
+        imposto_percentual:
+            lerNumero(
+                produtoImposto
+            ),
+
+
+        preco_venda:
+            Number(
+                calculo.precoVenda.toFixed(2)
+            ),
+
+
+        lucro_liquido:
+            Number(
+                calculo.lucroLiquido.toFixed(2)
+            ),
+
+
+        atualizado_em:
+            new Date().toISOString()
+
+    };
+
+
+    /* ======================================
+       EDITAR
+    ====================================== */
+
+    if(produtoEditandoId){
+
+        const {
+            error
+        } =
+            await produtosSupabase
+
+                .from("produtos")
+
+                .update(dados)
+
+                .eq(
+                    "id",
+                    produtoEditandoId
+                );
+
+
+        if(error){
+
+            console.error(
+                "Erro ao atualizar:",
+                error
+            );
+
+
+            mostrarMensagem(
+                "Erro ao atualizar.",
+                "erro"
+            );
+
+
+            return;
+
+        }
+
+
+        mostrarMensagem(
+            "Produto atualizado!",
+            "sucesso"
+        );
+
+    }
+
+
+    /* ======================================
+       NOVO
+    ====================================== */
+
+    else{
+
+        const {
+            error
+        } =
+            await produtosSupabase
+
+                .from("produtos")
+
+                .insert(dados);
+
+
+        if(error){
+
+            console.error(
+                "Erro ao cadastrar:",
+                error
+            );
+
+
+            mostrarMensagem(
+                "Erro ao cadastrar.",
+                "erro"
+            );
+
+
+            return;
+
+        }
+
+
+        mostrarMensagem(
+            "Produto cadastrado!",
+            "sucesso"
+        );
+
+    }
+
+
+    produtoEditandoId = null;
+
+
+    limparFormulario();
+
+
+    setTimeout(()=>{
+
+        formProduto.classList.remove(
+            "ativo"
+        );
+
+    },700);
+
+
+    carregarProdutos();
 
 }
-
-
-
-const usuario =
-await obterUsuarioAuth();
-
-
-
-if(!usuario){
-
-
-mostrarMensagem(
-"Sessão expirada.",
-"erro"
-);
-
-
-return;
-
-}
-
-
-
-
-const calculo =
-calcularValoresProduto();
-
-
-
-if(calculo.erro){
-
-
-mostrarMensagem(
-calculo.erro,
-"erro"
-);
-
-
-return;
-
-}
-
-
-
-
-
-const dados = {
-
-
-usuario_id:
-usuario.id,
-
-
-nome:
-
-
-nome,
-
-
-sku:
-
-produtoSku.value.trim() || null,
-
-
-
-categoria:
-
-produtoCategoria.value.trim() || null,
-
-
-
-preco_custo:
-
-Number(produtoCusto.value),
-
-
-
-lucro_percentual:
-
-Number(produtoLucro.value),
-
-
-
-taxa_fixa:
-
-Number(produtoTaxa.value),
-
-
-
-desconto_percentual:
-
-Number(produtoDesconto.value),
-
-
-
-imposto_percentual:
-
-Number(produtoImposto.value),
-
-
-
-preco_venda:
-
-Number(
-calculo.precoVenda.toFixed(2)
-),
-
-
-
-lucro_liquido:
-
-Number(
-calculo.lucroLiquido.toFixed(2)
-),
-
-
-
-atualizado_em:
-
-new Date().toISOString()
-
-
-};
-
-
-
-
-
-/* EDITAR */
-
-
-if(produtoEditandoId){
-
-
-const {
-error
-}
-=
-await produtosSupabase
-.from("produtos")
-.update(dados)
-.eq(
-"id",
-produtoEditandoId
-);
-
-
-
-if(error){
-
-console.error(error);
-
-mostrarMensagem(
-"Erro ao atualizar.",
-"erro"
-);
-
-return;
-
-}
-
-
-
-mostrarMensagem(
-"Produto atualizado!",
-"sucesso"
-);
-
-
-
-}
-
-
-
-
-
-/* NOVO */
-
-
-else{
-
-
-const {
-error
-}
-=
-await produtosSupabase
-.from("produtos")
-.insert(dados);
-
-
-
-if(error){
-
-console.error(error);
-
-mostrarMensagem(
-"Erro ao cadastrar.",
-"erro"
-);
-
-return;
-
-}
-
-
-
-mostrarMensagem(
-"Produto cadastrado!",
-"sucesso"
-);
-
-
-
-}
-
-
-
-
-produtoEditandoId = null;
-
-
-
-limparFormulario();
-
-
-
-setTimeout(()=>{
-
-
-formProduto.classList.remove(
-"ativo"
-);
-
-
-},700);
-
-
-
-carregarProdutos();
-
-
-
-}
-
-
-
 
 
 /* ==========================================
    CARREGAR PRODUTOS
 ========================================== */
 
-
 async function carregarProdutos(){
 
-
-listaProdutos.innerHTML =
-`
-<div class="lista-vazia">
-Carregando produtos...
-</div>
-`;
-
+    listaProdutos.innerHTML =
+    `
+        <div class="lista-vazia">
+            Carregando produtos...
+        </div>
+    `;
 
 
-const usuario =
-await obterUsuarioAuth();
+    const usuario =
+        await obterUsuarioAuth();
 
 
+    if(!usuario){
 
-if(!usuario){
-
-listaProdutos.innerHTML =
-`
-<div class="lista-vazia">
-Sessão não encontrada.
-</div>
-`;
-
-return;
-
-}
+        listaProdutos.innerHTML =
+        `
+            <div class="lista-vazia">
+                Sessão não encontrada.
+            </div>
+        `;
 
 
+        return;
+
+    }
 
 
-const {
-data,
-error
-}
-=
-await produtosSupabase
-.from("produtos")
-.select("*")
-.order(
-"criado_em",
-{
-ascending:false
-}
-);
+    const {
+        data,
+        error
+    } =
+        await produtosSupabase
+
+            .from("produtos")
+
+            .select("*")
+
+            .order(
+                "criado_em",
+                {
+                    ascending:false
+                }
+            );
 
 
+    if(error){
+
+        console.error(
+            "Erro ao carregar:",
+            error
+        );
 
 
-if(error){
+        listaProdutos.innerHTML =
+        `
+            <div class="lista-vazia">
+                Erro ao carregar produtos.
+            </div>
+        `;
 
 
-console.error(error);
+        return;
+
+    }
 
 
-
-listaProdutos.innerHTML =
-`
-<div class="lista-vazia">
-Erro ao carregar produtos.
-</div>
-`;
-
-return;
+    todosProdutos =
+        data || [];
 
 
-}
-
-
-
-todosProdutos =
-data || [];
-
-
-
-mostrarProdutos(
-todosProdutos
-);
-
-
+    mostrarProdutos(
+        todosProdutos
+    );
 
 }
+
+
 /* ==========================================
    MOSTRAR PRODUTOS
 ========================================== */
 
-
 function mostrarProdutos(produtos){
 
+    if(
+        !produtos ||
+        produtos.length === 0
+    ){
 
-if(!produtos || produtos.length === 0){
+        listaProdutos.innerHTML =
+        `
+            <div class="lista-vazia">
+
+                📦
+
+                <br><br>
+
+                Nenhum produto encontrado.
+
+            </div>
+        `;
+
+        return;
+
+    }
 
 
-listaProdutos.innerHTML =
-`
-<div class="lista-vazia">
+    listaProdutos.innerHTML = "";
 
-📦
 
-<br>
+    produtos.forEach(produto=>{
 
-Nenhum produto encontrado.
+        const item =
+            document.createElement("div");
 
-</div>
-`;
 
-return;
+        item.className =
+            "produto-item";
+
+
+        item.innerHTML = `
+
+            <div class="produto-nome">
+
+                ${escaparHTML(produto.nome)}
+
+            </div>
+
+
+            <div class="produto-sku">
+
+                SKU:
+                ${escaparHTML(
+                    produto.sku || ""
+                )}
+
+                <br>
+
+                Categoria:
+                ${escaparHTML(
+                    produto.categoria || ""
+                )}
+
+            </div>
+
+
+            <div class="produto-valores">
+
+
+                <div class="produto-valor">
+
+                    <span>
+                        CUSTO
+                    </span>
+
+                    <strong>
+                        ${formatarMoeda(
+                            produto.preco_custo
+                        )}
+                    </strong>
+
+                </div>
+
+
+
+                <div class="produto-valor">
+
+                    <span>
+                        VENDA
+                    </span>
+
+                    <strong>
+                        ${formatarMoeda(
+                            produto.preco_venda
+                        )}
+                    </strong>
+
+                </div>
+
+
+
+                <div class="produto-valor produto-lucro">
+
+                    <span>
+                        💰 LUCRO
+                    </span>
+
+                    <strong>
+                        ${formatarMoeda(
+                            produto.lucro_liquido
+                        )}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="produto-acoes">
+
+
+                <button
+                    class="btn-produto btn-editar"
+                    onclick="editarProduto('${produto.id}')"
+                >
+
+                    ✏️ Editar
+
+                </button>
+
+
+
+                <button
+                    class="btn-produto btn-recalcular"
+                    onclick="recalcularProduto('${produto.id}')"
+                >
+
+                    🔄 Recalcular
+
+                </button>
+
+
+
+                <button
+                    class="btn-produto btn-excluir"
+                    onclick="excluirProduto('${produto.id}')"
+                >
+
+                    🗑️ Excluir
+
+                </button>
+
+
+            </div>
+
+        `;
+
+
+        listaProdutos.appendChild(
+            item
+        );
+
+    });
 
 }
-
-
-
-listaProdutos.innerHTML = "";
-
-
-
-produtos.forEach(produto=>{
-
-
-const item =
-document.createElement("div");
-
-
-
-item.className =
-"produto-item";
-
-
-
-item.innerHTML = `
-
-
-<div class="produto-nome">
-
-${escaparHTML(produto.nome)}
-
-</div>
-
-
-
-<div class="produto-sku">
-
-SKU:
-${escaparHTML(produto.sku || "")}
-
-<br>
-
-Categoria:
-${escaparHTML(produto.categoria || "")}
-
-</div>
-
-
-
-<div class="produto-valores">
-
-
-<div class="produto-valor">
-
-<span>
-CUSTO
-</span>
-
-<strong>
-${formatarMoeda(produto.preco_custo)}
-</strong>
-
-</div>
-
-
-
-<div class="produto-valor">
-
-<span>
-VENDA
-</span>
-
-<strong>
-${formatarMoeda(produto.preco_venda)}
-</strong>
-
-</div>
-
-
-
-<div class="produto-valor">
-
-<span>
-💰 LUCRO
-</span>
-
-<strong>
-${formatarMoeda(produto.lucro_liquido)}
-</strong>
-
-</div>
-
-
-
-</div>
-
-
-
-
-<div class="produto-acoes">
-
-
-<button
-class="btn-produto btn-editar"
-onclick="editarProduto('${produto.id}')"
->
-
-✏️ Editar
-
-</button>
-
-
-
-<button
-class="btn-produto btn-recalcular"
-onclick="recalcularProduto('${produto.id}')"
->
-
-🔄 Recalcular
-
-</button>
-
-
-
-<button
-class="btn-produto btn-excluir"
-onclick="excluirProduto('${produto.id}')"
->
-
-🗑️ Excluir
-
-</button>
-
-
-
-</div>
-
-
-`;
-
-
-
-listaProdutos.appendChild(item);
-
-
-
-});
-
-
-
-}
-
-
-
-
-
 
 
 /* ==========================================
    BUSCA
 ========================================== */
 
-
 if(buscarProduto){
 
+    buscarProduto.addEventListener(
+        "input",
+        function(){
 
-buscarProduto.addEventListener(
-"input",
-function(){
-
-
-const termo =
-this.value
-.toLowerCase()
-.trim();
+            const termo =
+                this.value
+                    .toLowerCase()
+                    .trim();
 
 
+            if(!termo){
 
-if(!termo){
+                mostrarProdutos(
+                    todosProdutos
+                );
 
+                return;
 
-mostrarProdutos(
-todosProdutos
-);
-
-
-return;
-
-}
+            }
 
 
+            const filtrados =
+                todosProdutos.filter(
+                    produto=>{
 
-const filtrados =
-todosProdutos.filter(produto=>{
+                        return (
 
+                            (produto.nome || "")
+                                .toLowerCase()
+                                .includes(
+                                    termo
+                                )
 
-return (
+                            ||
 
-(produto.nome || "")
-.toLowerCase()
-.includes(termo)
+                            (produto.sku || "")
+                                .toLowerCase()
+                                .includes(
+                                    termo
+                                )
 
-||
+                            ||
 
-(produto.sku || "")
-.toLowerCase()
-.includes(termo)
+                            (produto.categoria || "")
+                                .toLowerCase()
+                                .includes(
+                                    termo
+                                )
 
-||
+                        );
 
-(produto.categoria || "")
-.toLowerCase()
-.includes(termo)
-
-);
-
-
-});
-
-
-
-mostrarProdutos(
-filtrados
-);
-
+                    }
+                );
 
 
-});
+            mostrarProdutos(
+                filtrados
+            );
 
+        }
+    );
 
 }
-
-
-
-
-
 
 
 /* ==========================================
    EDITAR
 ========================================== */
 
-
 async function editarProduto(id){
 
-
-const produto =
-todosProdutos.find(
-p=>p.id == id
-);
-
+    const produto =
+        todosProdutos.find(
+            p=>p.id == id
+        );
 
 
-if(!produto){
+    if(!produto){
 
-alert(
-"Produto não encontrado."
-);
+        alert(
+            "Produto não encontrado."
+        );
 
-return;
+        return;
+
+    }
+
+
+    produtoEditandoId =
+        produto.id;
+
+
+    formTitulo.textContent =
+        "Editar Produto";
+
+
+    produtoNome.value =
+        produto.nome || "";
+
+
+    produtoSku.value =
+        produto.sku || "";
+
+
+    produtoCategoria.value =
+        produto.categoria || "";
+
+
+    /* ======================================
+       PB E D
+    ====================================== */
+
+    const custoAntigo =
+        Number(
+            produto.preco_custo || 0
+        );
+
+
+    const PB =
+        produto.preco_bruto !== null &&
+        produto.preco_bruto !== undefined
+            ? produto.preco_bruto
+            : custoAntigo;
+
+
+    const D =
+        produto.desconto_custo_percentual !== null &&
+        produto.desconto_custo_percentual !== undefined
+            ? produto.desconto_custo_percentual
+            : 0;
+
+
+    produtoPB.value =
+        PB;
+
+
+    produtoDescontoCusto.value =
+        D;
+
+
+    /* ======================================
+       CALCULAR PC
+    ====================================== */
+
+    calcularPrecoCustoProduto();
+
+
+    /* ======================================
+       DEMAIS CAMPOS
+    ====================================== */
+
+    produtoLucro.value =
+        produto.lucro_percentual ?? "";
+
+
+    produtoTaxa.value =
+        produto.taxa_fixa ?? "";
+
+
+    produtoDesconto.value =
+        produto.desconto_percentual ?? "";
+
+
+    produtoImposto.value =
+        produto.imposto_percentual ?? "";
+
+
+    mostrarMensagem("");
+
+
+    formProduto.classList.add(
+        "ativo"
+    );
+
+
+    window.scrollTo({
+
+        top:0,
+
+        behavior:"smooth"
+
+    });
 
 }
-
-
-
-produtoEditandoId =
-produto.id;
-
-
-
-formTitulo.textContent =
-"Editar Produto";
-
-
-
-produtoNome.value =
-produto.nome || "";
-
-
-
-produtoSku.value =
-produto.sku || "";
-
-
-
-produtoCategoria.value =
-produto.categoria || "";
-
-
-
-produtoCusto.value =
-produto.preco_custo || "";
-
-
-
-produtoLucro.value =
-produto.lucro_percentual || "";
-
-
-
-produtoTaxa.value =
-produto.taxa_fixa || "";
-
-
-
-produtoDesconto.value =
-produto.desconto_percentual || "";
-
-
-
-produtoImposto.value =
-produto.imposto_percentual || "";
-
-
-
-formProduto.classList.add(
-"ativo"
-);
-
-
-
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
-
-
-}
-
-
-
 
 
 /* ==========================================
-   RECALCULAR
+   RECALCULAR PRODUTO
 ========================================== */
-
 
 async function recalcularProduto(id){
 
-
-const produto =
-todosProdutos.find(
-p=>p.id == id
-);
-
+    const produto =
+        todosProdutos.find(
+            p=>p.id == id
+        );
 
 
-if(!produto){
+    if(!produto){
 
-return;
+        return;
+
+    }
+
+
+    const PB =
+        Number(
+            produto.preco_bruto ??
+            produto.preco_custo ??
+            0
+        );
+
+
+    const D =
+        Number(
+            produto.desconto_custo_percentual ??
+            0
+        );
+
+
+    const PC =
+        PB *
+        (1 - D / 100);
+
+
+    const L =
+        Number(
+            produto.lucro_percentual
+        );
+
+
+    const TF =
+        Number(
+            produto.taxa_fixa
+        );
+
+
+    const PD =
+        Number(
+            produto.desconto_percentual
+        );
+
+
+    const I =
+        Number(
+            produto.imposto_percentual
+        );
+
+
+    const lucroPC =
+        PC *
+        (L / 100);
+
+
+    const numerador =
+        PC +
+        lucroPC +
+        TF;
+
+
+    const divisor =
+        100 -
+        PD -
+        I;
+
+
+    if(divisor <= 0){
+
+        alert(
+            "Desconto e imposto inválidos."
+        );
+
+        return;
+
+    }
+
+
+    const precoVenda =
+        numerador /
+        (divisor / 100);
+
+
+    const desconto =
+        precoVenda *
+        (PD / 100);
+
+
+    const imposto =
+        precoVenda *
+        (I / 100);
+
+
+    const lucroLiquido =
+        precoVenda -
+        PC -
+        TF -
+        desconto -
+        imposto;
+
+
+    const {
+        error
+    } =
+        await produtosSupabase
+
+            .from("produtos")
+
+            .update({
+
+                preco_bruto:
+                    PB,
+
+                desconto_custo_percentual:
+                    D,
+
+                preco_custo:
+                    Number(
+                        PC.toFixed(6)
+                    ),
+
+                preco_venda:
+                    Number(
+                        precoVenda.toFixed(2)
+                    ),
+
+                lucro_liquido:
+                    Number(
+                        lucroLiquido.toFixed(2)
+                    ),
+
+                atualizado_em:
+                    new Date().toISOString()
+
+            })
+
+            .eq(
+                "id",
+                id
+            );
+
+
+    if(error){
+
+        console.error(
+            "Erro ao recalcular:",
+            error
+        );
+
+        alert(
+            "Erro ao recalcular produto."
+        );
+
+        return;
+
+    }
+
+
+    carregarProdutos();
 
 }
-
-
-
-const calculo =
-{
-
-precoVenda:
-
-Number(produto.preco_custo)
-+
-(
-Number(produto.preco_custo)
-*
-Number(produto.lucro_percentual)
-/100
-)
-+
-Number(produto.taxa_fixa)
-
-
-
-};
-
-
-
-await produtosSupabase
-.from("produtos")
-.update({
-
-preco_venda:
-Number(calculo.precoVenda.toFixed(2)),
-
-atualizado_em:
-new Date().toISOString()
-
-})
-.eq(
-"id",
-id
-);
-
-
-
-carregarProdutos();
-
-
-
-}
-
-
-
 
 
 /* ==========================================
    EXCLUIR
 ========================================== */
 
-
 async function excluirProduto(id){
 
-
-const confirmar =
-confirm(
-"Deseja excluir este produto?"
-);
-
+    const confirmar =
+        confirm(
+            "Deseja excluir este produto?"
+        );
 
 
-if(!confirmar){
+    if(!confirmar){
 
-return;
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+        await produtosSupabase
+
+            .from("produtos")
+
+            .delete()
+
+            .eq(
+                "id",
+                id
+            );
+
+
+    if(error){
+
+        console.error(
+            "Erro ao excluir:",
+            error
+        );
+
+        alert(
+            "Erro ao excluir produto."
+        );
+
+        return;
+
+    }
+
+
+    carregarProdutos();
 
 }
-
-
-
-const {
-error
-}
-=
-await produtosSupabase
-.from("produtos")
-.delete()
-.eq(
-"id",
-id
-);
-
-
-
-if(error){
-
-alert(
-"Erro ao excluir produto."
-);
-
-return;
-
-}
-
-
-
-carregarProdutos();
-
-
-
-}
-
-
-
-
-
 
 
 /* ==========================================
    VOLTAR
 ========================================== */
 
-
 function voltarCalculadora(){
 
-
-window.location.href =
-"calculadora.html";
-
+    window.location.href =
+        "calculadora.html";
 
 }
-
-
-
-
-
 
 
 /* ==========================================
    MOSTRAR USUÁRIO
 ========================================== */
 
-
 async function mostrarUsuario(){
 
-
-const sessao =
-obterSessao();
-
+    const sessao =
+        obterSessao();
 
 
-const usuario =
-document.getElementById(
-"usuarioLogado"
+    const usuario =
+        document.getElementById(
+            "usuarioLogado"
+        );
+
+
+    if(
+        usuario &&
+        sessao
+    ){
+
+        usuario.textContent =
+            sessao.nome ||
+            sessao.usuario ||
+            "Cliente";
+
+    }
+
+}
+
+
+/* ==========================================
+   EVENTOS DO PB E D
+========================================== */
+
+/*
+   Estes dois eventos são os responsáveis
+   por calcular o PC automaticamente
+   enquanto o usuário digita.
+*/
+
+produtoPB.addEventListener(
+    "input",
+    atualizarPrecoCustoProduto
 );
 
 
-
-if(usuario && sessao){
-
-
-usuario.textContent =
-sessao.nome ||
-sessao.usuario ||
-"Cliente";
-
-
-}
-
-
-
-}
-
-
-
-
-
+produtoDescontoCusto.addEventListener(
+    "input",
+    atualizarPrecoCustoProduto
+);
 
 
 /* ==========================================
    INICIAR
 ========================================== */
 
-
 async function iniciarProdutos(){
 
+    await mostrarUsuario();
 
-await mostrarUsuario();
-
-
-await carregarProdutos();
-
-
+    await carregarProdutos();
 
 }
-
 
 
 iniciarProdutos();
