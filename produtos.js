@@ -219,10 +219,6 @@ function calcularPrecoCustoProduto(){
         lerNumero(produtoDescontoCusto);
 
 
-    /* ======================================
-       CAMPOS VAZIOS
-    ====================================== */
-
     if(
         !Number.isFinite(PB) ||
         !Number.isFinite(D)
@@ -245,10 +241,6 @@ function calcularPrecoCustoProduto(){
     }
 
 
-    /* ======================================
-       VALIDAR PREÇO BRUTO
-    ====================================== */
-
     if(PB < 0){
 
         produtoCusto.value = "";
@@ -268,10 +260,6 @@ function calcularPrecoCustoProduto(){
 
     }
 
-
-    /* ======================================
-       VALIDAR DESCONTO
-    ====================================== */
 
     if(
         D < 0 ||
@@ -296,19 +284,9 @@ function calcularPrecoCustoProduto(){
     }
 
 
-    /* ======================================
-       CÁLCULO
-
-       PC = PB × (1 - D / 100)
-    ====================================== */
-
     const PC =
         PB * (1 - D / 100);
 
-
-    /* ======================================
-       MOSTRAR PC
-    ====================================== */
 
     produtoCusto.value =
         PC.toFixed(6);
@@ -389,10 +367,6 @@ function calcularValoresProduto(){
         lerNumero(produtoImposto);
 
 
-    /* ======================================
-       CAMPOS VAZIOS
-    ====================================== */
-
     if(
         !Number.isFinite(L) ||
         !Number.isFinite(TF) ||
@@ -419,10 +393,6 @@ function calcularValoresProduto(){
     }
 
 
-    /* ======================================
-       VALIDAR LUCRO
-    ====================================== */
-
     if(L < 0){
 
         return {
@@ -435,10 +405,6 @@ function calcularValoresProduto(){
     }
 
 
-    /* ======================================
-       VALIDAR TAXA
-    ====================================== */
-
     if(TF < 0){
 
         return {
@@ -450,10 +416,6 @@ function calcularValoresProduto(){
 
     }
 
-
-    /* ======================================
-       VALIDAR PD
-    ====================================== */
 
     if(
         PD < 0 ||
@@ -470,10 +432,6 @@ function calcularValoresProduto(){
     }
 
 
-    /* ======================================
-       VALIDAR IMPOSTO
-    ====================================== */
-
     if(
         I < 0 ||
         I >= 100
@@ -489,25 +447,13 @@ function calcularValoresProduto(){
     }
 
 
-    /* ======================================
-       PC
-    ====================================== */
-
     const PC =
         precoCusto.pc;
 
 
-    /* ======================================
-       LUCRO SOBRE PC
-    ====================================== */
-
     const lucroPC =
         PC * (L / 100);
 
-
-    /* ======================================
-       NUMERADOR
-    ====================================== */
 
     const numerador =
         PC +
@@ -515,19 +461,11 @@ function calcularValoresProduto(){
         TF;
 
 
-    /* ======================================
-       DENOMINADOR
-    ====================================== */
-
     const divisor =
         100 -
         PD -
         I;
 
-
-    /* ======================================
-       VALIDAR DIVISOR
-    ====================================== */
 
     if(divisor <= 0){
 
@@ -541,36 +479,20 @@ function calcularValoresProduto(){
     }
 
 
-    /* ======================================
-       PREÇO DE VENDA
-    ====================================== */
-
     const precoVenda =
         numerador /
         (divisor / 100);
 
-
-    /* ======================================
-       DESCONTO DA VENDA
-    ====================================== */
 
     const desconto =
         precoVenda *
         (PD / 100);
 
 
-    /* ======================================
-       IMPOSTO
-    ====================================== */
-
     const imposto =
         precoVenda *
         (I / 100);
 
-
-    /* ======================================
-       LUCRO LÍQUIDO
-    ====================================== */
 
     const lucroLiquido =
         precoVenda -
@@ -634,7 +556,7 @@ function novoProduto(){
 
 
 /* ==========================================
-   LIMPAR FORMULÁRIO
+   LIMPAR
 ========================================== */
 
 function limparFormulario(){
@@ -685,7 +607,7 @@ function cancelarProduto(){
 
 
 /* ==========================================
-   SALVAR PRODUTO
+   SALVAR
 ========================================== */
 
 async function salvarProduto(){
@@ -1064,6 +986,7 @@ function mostrarProdutos(produtos){
             <div class="produto-sku">
 
                 SKU:
+
                 ${escaparHTML(
                     produto.sku || ""
                 )}
@@ -1071,6 +994,7 @@ function mostrarProdutos(produtos){
                 <br>
 
                 Categoria:
+
                 ${escaparHTML(
                     produto.categoria || ""
                 )}
@@ -1081,48 +1005,93 @@ function mostrarProdutos(produtos){
             <div class="produto-valores">
 
 
+                <!-- CUSTO BRUTO -->
+
                 <div class="produto-valor">
 
                     <span>
-                        CUSTO
+
+                        CUSTO BRUTO
+
                     </span>
 
+
                     <strong>
+
+                        ${formatarMoeda(
+                            produto.preco_bruto ??
+                            produto.preco_custo
+                        )}
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- CUSTO LÍQUIDO -->
+
+                <div class="produto-valor">
+
+                    <span>
+
+                        CUSTO LÍQUIDO
+
+                    </span>
+
+
+                    <strong>
+
                         ${formatarMoeda(
                             produto.preco_custo
                         )}
+
                     </strong>
 
                 </div>
 
 
+
+                <!-- VENDA -->
 
                 <div class="produto-valor">
 
                     <span>
+
                         VENDA
+
                     </span>
 
+
                     <strong>
+
                         ${formatarMoeda(
                             produto.preco_venda
                         )}
+
                     </strong>
 
                 </div>
 
 
+
+                <!-- LUCRO -->
 
                 <div class="produto-valor produto-lucro">
 
                     <span>
+
                         💰 LUCRO
+
                     </span>
 
+
                     <strong>
+
                         ${formatarMoeda(
                             produto.lucro_liquido
                         )}
+
                     </strong>
 
                 </div>
@@ -1294,10 +1263,6 @@ async function editarProduto(id){
         produto.categoria || "";
 
 
-    /* ======================================
-       PB E D
-    ====================================== */
-
     const custoAntigo =
         Number(
             produto.preco_custo || 0
@@ -1326,16 +1291,8 @@ async function editarProduto(id){
         D;
 
 
-    /* ======================================
-       CALCULAR PC
-    ====================================== */
-
     calcularPrecoCustoProduto();
 
-
-    /* ======================================
-       DEMAIS CAMPOS
-    ====================================== */
 
     produtoLucro.value =
         produto.lucro_percentual ?? "";
@@ -1373,7 +1330,7 @@ async function editarProduto(id){
 
 
 /* ==========================================
-   RECALCULAR PRODUTO
+   RECALCULAR
 ========================================== */
 
 async function recalcularProduto(id){
@@ -1649,12 +1606,6 @@ async function mostrarUsuario(){
 /* ==========================================
    EVENTOS DO PB E D
 ========================================== */
-
-/*
-   Estes dois eventos são os responsáveis
-   por calcular o PC automaticamente
-   enquanto o usuário digita.
-*/
 
 produtoPB.addEventListener(
     "input",
